@@ -127,14 +127,35 @@ function MintPage({ onMint, minting, error, success, walletConnected, connectWal
           <h3 style={{ marginBottom: "1rem", fontSize: "1.4rem", color: "#0ff", textAlign: "center" }}>
             Owner Benefits
           </h3>
-          <ul style={{ lineHeight: "1.6", fontSize: "1rem", color: "#ccc", paddingLeft: "1rem", listStyleType: "none" }}>
-            <li>✅ Become part of the Tuscanium artistic vision and collector community</li>
-            <li>✅ Guaranteed extra airdrops of value that you can even insta-flip for <b>every holder</b></li>
-            <li>✅ 10% discount on next mint phases</li>
-            <li>✅ <b>FREE CANVAS</b> delivered at home for Phase 1 buyers 🎁</li>
-            <li>✅ <b>Premium</b> Holder role on Discord with access to private channels, early news, and special benefits</li>
-            <li>✅ <b>Extra rewards</b> and more discounts for those holding <b>all 3 phases</b></li>
-          </ul>
+        <ul style={{ lineHeight: "1.6", fontSize: "1rem", color: "#ccc", paddingLeft: "1rem", listStyleType: "none" }}>
+  <li>✅ Become part of the Tuscanium artistic vision and collector community</li>
+  <li>
+    ✅ Guaranteed{" "}
+    <span style={{ color: "lime", fontWeight: "bold" }}>
+      extra airdrops
+    </span>{" "}
+    of value that you can even insta-flip for <b>every holder</b>
+  </li>
+  <li>✅ 10% discount on next mint phases</li>
+  <li>
+    ✅{" "}
+    <span style={{ color: "lime", fontWeight: "bold" }}>
+      FREE CANVAS
+    </span>{" "}
+    delivered at home for Phase 1 buyers 🎁
+  </li>
+  <li>
+    ✅ <b>Premium</b> Holder role on Discord with access to private channels, early news, and special benefits
+  </li>
+  <li>
+    ✅{" "}
+    <span style={{ color: "lime", fontWeight: "bold" }}>
+      Extra rewards
+    </span>{" "}
+    and more discounts for those holding <b>all 3 phases</b>
+  </li>
+</ul>
+
         </div>
       </div>
 
@@ -415,52 +436,97 @@ function Roadmap() {
 
 // === Our Collections component ===
 function OurCollections() {
-  return (
+return (
+  <div
+    style={{
+      animation: "fadeIn 0.8s ease-in-out",
+      padding: "3rem 2rem",
+      maxWidth: 900,
+      margin: "0 auto",
+      color: "#fff",
+      fontFamily: "'Poppins', sans-serif",
+      fontSize: "1.15rem",
+      lineHeight: "1.8",
+      textAlign: "center",
+    }}
+  >
+    <h1 style={{ marginBottom: "1.5rem" }}>David's Phases</h1>
+    <img
+      src="/images/1.png"
+      alt="Our Collection"
+      style={{
+        width: "400px",
+        maxWidth: "90vw",
+        borderRadius: "12px",
+        marginBottom: "1rem",
+      }}
+    />
+    <p style={{ marginBottom: "2rem" }}>
+      Inspired by Michelangelo’s David, each NFT in this collection ignites the
+      marble skin in vibrant flames, capturing a metamorphic journey of courage
+      and rebirth. Watch as David’s phases transform, his surface glowing with
+      the power to overcome giants and emerge anew.
+   <p>
+  Additionally, by purchasing Phase 1, you will receive a{" "}
+  <span style={{ color: "lime", fontWeight: "bold" }}>
+    free canvas
+  </span>{" "}
+  shipped directly to your home at no cost.
+</p>
+
+    </p>
+
+    {/* Prima e Dopo */}
     <div
       style={{
-        animation: "fadeIn 0.8s ease-in-out",
-        padding: "3rem 2rem",
-        maxWidth: 900,
-        margin: "0 auto",
-        color: "#fff",
-        fontFamily: "'Poppins', sans-serif",
-        fontSize: "1.15rem",
-        lineHeight: "1.8",
-        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "1rem",
+        flexWrap: "wrap",
+        marginBottom: "2rem",
       }}
     >
-      <h1 style={{ marginBottom: "1.5rem" }}>David's Phases</h1>
       <img
-        src="/images/1.png"
-        alt="Our Collection"
+        src="/images/davidoriginale.png"
+        alt="David Before"
         style={{
-          width: "400px",
-          maxWidth: "90vw",
-          borderRadius: "12px",
-          marginBottom: "1rem",
+          width: "180px",
+          borderRadius: "10px",
+          objectFit: "cover",
         }}
       />
-      <p style={{ marginBottom: "1rem" }}>
-        Inspired by Michelangelo’s David, each NFT in this collection ignites the
-  marble skin in vibrant flames, capturing a metamorphic journey of courage
-  and rebirth. Watch as David’s phases transform, his surface glowing with
-  the power to overcome giants and emerge anew.
-      </p>
-      <a
-        href="https://opensea.io/collection/david-s-phases-by-tuscanium"
-        target="_blank"
-        rel="noopener noreferrer"
+      <span style={{ fontSize: "2rem", color: "#0ff" }}>➡️</span>
+      <img
+        src="/images/2.png"
+        alt="David After"
         style={{
-          color: "#0ff",
-          textDecoration: "underline",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
+          width: "180px",
+          borderRadius: "10px",
+          objectFit: "cover",
         }}
-      >
-        View on OpenSea
-      </a>
+      />
     </div>
-  );
+
+    {/* Link in fondo */}
+    <a
+      href="https://opensea.io/collection/david-s-phases-by-tuscanium"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        color: "#0ff",
+        textDecoration: "underline",
+        fontWeight: "bold",
+        fontSize: "1.2rem",
+        display: "inline-block",
+        marginTop: "1rem",
+      }}
+    >
+      View on OpenSea
+    </a>
+  </div>
+);
+
 }
 
 function HowToBuy() {
