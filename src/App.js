@@ -811,7 +811,7 @@ const tx = await contract.mint(id, amount, {
   </button>
 )}
 
-      <nav
+  <nav
   style={{
     width: isMobile ? (menuOpen ? "200px" : "0") : "260px",
     backgroundColor: "#111",
@@ -825,9 +825,12 @@ const tx = await contract.mint(id, amount, {
     boxSizing: "border-box",
     overflow: "hidden",
     opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
-    transition: "all 0.3s ease"
+    pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
+    transition: "all 0.3s ease",
+    zIndex: 50
   }}
 >
+
 
 >
 
