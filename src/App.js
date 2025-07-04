@@ -222,23 +222,24 @@ setMintedCount(Number(minted));
           }}
         />
 
-        <div style={{ marginTop: "1rem", textAlign: "center" }}>
   <button
-    onClick={() => onMint(currentPhase.id, mintAmount)}
-    disabled={minting}
-    style={{
-      padding: "1rem 3rem",
-      fontSize: "1.2rem",
-      border: "none",
-      borderRadius: "10px",
-      backgroundColor: "#0ff",
-      color: "#000",
-      fontWeight: "bold",
-      cursor: "pointer"
-    }}
-  >
-    {minting ? "Minting..." : "MINT NOW"}
-  </button>
+  onClick={() => requireConnection(walletConnected, connectWallet, () => onMint(currentPhase.id, mintAmount))}
+  disabled={minting}
+
+  style={{
+    padding: "1rem 3rem",
+    fontSize: "1.2rem",
+    border: "none",
+    borderRadius: "10px",
+    backgroundColor: "#0ff",
+    color: "#000",
+    fontWeight: "bold",
+    cursor: "pointer"
+  }}
+>
+  {minting ? "Minting..." : "MINT NOW"}
+</button>
+
 </div>
 
 <div style={{ marginTop: "1rem", textAlign: "center" }}>
@@ -255,14 +256,20 @@ setMintedCount(Number(minted));
   >
     View on OpenSea
   </a>
+
+  {error && (
+    <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
+      {error}
+    </p>
+  )}
+  {success && (
+    <p style={{ color: "lightgreen", marginTop: "1rem", textAlign: "center" }}>
+      {success}
+    </p>
+  )}
 </div>
-
-      </div>
-
-      {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
-      {success && <p style={{ color: "lightgreen", marginTop: "1rem", textAlign: "center" }}>{success}</p>}
-    </div>
-  );
+</div>
+);
 }
 
 function AboutUs() {
@@ -598,9 +605,11 @@ function RedeemCanvas({
   walletConnected,
   burnTxHash,
   purchaseTxHash,
-    walletAddress,
-  buyCanvas 
-}) {
+  walletAddress,
+  buyCanvas,
+  connectWallet  // 👈 aggiunto
+})
+ {
   return (
     <div
       style={{
@@ -670,22 +679,24 @@ function RedeemCanvas({
       <div style={{ textAlign: "center" }}>
         {/* Button Burn */}
         <button
-          onClick={burnVoucher}
-          disabled={burning || !walletConnected}
-          style={{
-            padding: "1rem 2rem",
-            fontSize: "1.2rem",
-            border: "none",
-            borderRadius: "8px",
-            backgroundColor: burning ? "#888" : "#0ff",
-            color: "#000",
-            fontWeight: "bold",
-            cursor: burning || !walletConnected ? "not-allowed" : "pointer",
-            transition: "background 0.3s ease",
-          }}
-        >
-          {burning ? "Burning..." : "🔥 Burn Voucher"}
-        </button>
+  onClick={() => requireConnection(walletConnected, connectWallet, burnVoucher)}
+  disabled={burning}
+
+  style={{
+    padding: "1rem 2rem",
+    fontSize: "1.2rem",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: burning ? "#888" : "#0ff",
+    color: "#000",
+    fontWeight: "bold",
+    cursor: burning ? "not-allowed" : "pointer",
+    transition: "background 0.3s ease",
+  }}
+>
+  {burning ? "Burning..." : "🔥 Burn Voucher"}
+</button>
+
 
         <p style={{ margin: "1rem 0", fontSize: "1.2rem", fontWeight: "bold", color: "#999" }}>
           OR
@@ -694,22 +705,24 @@ function RedeemCanvas({
         {/* Button Buy */}
         <div style={{ marginBottom: "1rem" }}>
           <button
-            onClick={buyCanvas}
-            disabled={burning || !walletConnected}
-            style={{
-              padding: "1rem 2rem",
-              fontSize: "1.2rem",
-              border: "none",
-              borderRadius: "8px",
-              backgroundColor: burning ? "#888" : "#ff9900",
-              color: "#000",
-              fontWeight: "bold",
-              cursor: burning || !walletConnected ? "not-allowed" : "pointer",
-              transition: "background 0.3s ease",
-            }}
-          >
-            {burning ? "Processing..." : "💰 Buy Now - 0.049 ETH"}
-          </button>
+  onClick={() => requireConnection(walletConnected, connectWallet, buyCanvas)}
+  disabled={burning}
+
+  style={{
+    padding: "1rem 2rem",
+    fontSize: "1.2rem",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: burning ? "#888" : "#ff9900",
+    color: "#000",
+    fontWeight: "bold",
+    cursor: burning ? "not-allowed" : "pointer",
+    transition: "background 0.3s ease",
+  }}
+>
+  {burning ? "Processing..." : "💰 Buy Now - 0.049 ETH"}
+</button>
+
         </div>
 
       <p
@@ -760,6 +773,14 @@ function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
+function requireConnection(walletConnected, connectWallet, action) {
+  if (!walletConnected) {
+    connectWallet();
+  } else {
+    action();
+  }
+}
+
 
 export default function App() {
   const [minting, setMinting] = useState(false);
@@ -775,6 +796,8 @@ const [burnTxHash, setBurnTxHash] = useState(null);
 const [purchaseTxHash, setPurchaseTxHash] = useState(null);
 const [menuOpen, setMenuOpen] = useState(false);
 const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+   
 
 useEffect(() => {
   const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -806,6 +829,8 @@ useEffect(() => {
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, [isMobile]);
+
+
 
 async function burnVoucher() {
   if (!window.ethereum) {
@@ -1283,21 +1308,23 @@ const tx = await contract.mint(id, amount, {
       <Route path="/roadmap" element={<Roadmap />} />
       <Route path="/howtobuy" element={<HowToBuy />} />
       <Route
-        path="/redeem"
-        element={
-          <RedeemCanvas
-            burnVoucher={burnVoucher}
-            burning={burning}
-            burnError={burnError}
-            burnSuccess={burnSuccess}
-            walletConnected={walletConnected}
-            burnTxHash={burnTxHash}
-            purchaseTxHash={purchaseTxHash}
-            walletAddress={walletAddress}
-            buyCanvas={buyCanvas}
-          />
-        }
-      />
+  path="/redeem"
+  element={
+    <RedeemCanvas
+      burnVoucher={burnVoucher}
+      burning={burning}
+      burnError={burnError}
+      burnSuccess={burnSuccess}
+      walletConnected={walletConnected}
+      burnTxHash={burnTxHash}
+      purchaseTxHash={purchaseTxHash}
+      walletAddress={walletAddress}
+      buyCanvas={buyCanvas}
+      connectWallet={connectWallet}   // 👈 aggiungi questo!
+    />
+  }
+/>
+
     </Routes>
   </main>
 </Router>
