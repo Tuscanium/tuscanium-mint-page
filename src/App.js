@@ -70,6 +70,9 @@ function MintPage({ onMint, minting, error, success, walletConnected, connectWal
         const price = await contract.tokenPrice(currentPhase.id);
         const formatted = parseFloat(formatEther(price));
         setBasePrice(formatted);
+const minted = await contract.tokenSupply(currentPhase.id);
+setMintedCount(Number(minted));
+
 
         const phaseStatus = await contract.phaseActive(currentPhase.id);
         setIsPhaseActive(phaseStatus);
@@ -276,11 +279,11 @@ function AboutUs() {
         lineHeight: "1.8",
       }}
     >
-      <h1 style={{ marginBottom: "1.5rem" }}>About Tuscanium</h1>
+<h1 style={{ marginBottom: "1.5rem", textAlign: "center" }}>About Tuscanium</h1>
 
       {/* Intro testo pieno */}
       <p style={{ marginBottom: "1.5rem" }}>
-        Tuscanium is more than an NFT project — it is an emerging brand dedicated to connecting Italian artistic heritage with global innovation. We see art as a transformative force that unites creativity, technology, and culture, shaping new ways to create and share value.
+        Tuscanium is more than an NFT project, it is an emerging brand dedicated to connecting Italian artistic heritage with global innovation. We see art as a transformative force that unites creativity, technology, and culture, shaping new ways to create and share value.
       </p>
 
       {/* Foto + testo accanto */}
@@ -718,6 +721,10 @@ function RedeemCanvas({
   );
 }
 
+function isMobileDevice() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 
 export default function App() {
   const [minting, setMinting] = useState(false);
@@ -740,6 +747,30 @@ useEffect(() => {
   return () => window.removeEventListener("resize", handleResize);
 }, []);
 
+useEffect(() => {
+  if (!isMobile) return; // Non fare nulla su desktop
+
+  function handleScroll() {
+    const footer = document.querySelector("footer");
+    const button = document.querySelector('a[href*="metamask"]');
+    if (!footer || !button) return;
+
+    const footerRect = footer.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    if (footerRect.top < windowHeight) {
+      // Se il footer è visibile nella viewport, solleva il bottone
+      const overlap = windowHeight - footerRect.top + 16; // 16px margine
+      button.style.bottom = `${overlap}px`;
+    } else {
+      // Se il footer non è visibile, resta in basso
+      button.style.bottom = "1rem";
+    }
+  }
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isMobile]);
 
 async function burnVoucher() {
   if (!window.ethereum) {
@@ -862,34 +893,35 @@ const tx = await contract.mint(id, amount, {
   return (
     <>
       <style>{keyframes}</style>
-      <style>{`
+<style>{`
   nav button {
     font-family: 'Poppins', sans-serif;
   }
 `}</style>
+<style>{`
+  @media (max-width: 768px) {
+    body, div, p, h1, h2, h3, li {
+      font-size: 0.95rem !important;
+      line-height: 1.6 !important;
+    }
+    main > div, main > section {
+      padding: 1.2rem !important;
+    }
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  }
+`}</style>
+<style>{`
+  @media (max-width: 768px) {
+    /* Allarga la seconda card (Owner Benefits) a tutta larghezza */
+    div[style*="display: flex"][style*="flex-wrap"][style*="justify-content"] > div:nth-child(2) {
+      width: 100% !important;
+    }
+  }
+`}</style>
 
-      <style>{`
-        nav button:hover {
-          background-color: #555 !important;
-          color: #0ff !important;
-        }
-
-        @media (max-width: 768px) {
-          nav {
-            width: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-            padding: 1rem !important;
-          }
-          main {
-            width: 100% !important;
-            padding: 1rem !important;
-          }
-          div[style*="display: flex"][style*="min-height: 100vh"] {
-            flex-wrap: wrap !important;
-          }
-        }
-      `}</style>
 
       <div
         style={{
@@ -939,26 +971,62 @@ const tx = await contract.mint(id, amount, {
 )}
 
 {!walletConnected && (
-  <button
-    onClick={connectWallet}
+  <>
+    {isMobile && !menuOpen && (
+  <a
+    href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
+    target="_blank"
+    rel="noopener noreferrer"
     style={{
-      position: "absolute",
-      top: "100px",
+      position: "fixed",
+      bottom: "1rem",
       right: "1rem",
-      padding: "0.6rem 1.2rem",
-      backgroundColor: "#0ff",
+      padding: "0.8rem 1.4rem",
+      backgroundColor: "#ffa500",
       border: "none",
-      borderRadius: "6px",
+      borderRadius: "8px",
       color: "#000",
       fontWeight: "bold",
-      fontSize: "0.95rem",
-      cursor: "pointer",
-      zIndex: 9,
+      fontSize: "1rem",
+      textDecoration: "none",
+      textAlign: "center",
+      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+      zIndex: 999
     }}
   >
-    Connect Wallet
-  </button>
+    🦊 Open in MetaMask
+  </a>
 )}
+
+
+    {!isMobile && (
+      <button
+        onClick={connectWallet}
+        style={{
+          position: "absolute",
+          top: "100px",
+          right: "1rem",
+          padding: "0.8rem 1.4rem",
+          backgroundColor: "#ffa500",
+          border: "none",
+          borderRadius: "8px",
+          color: "#000",
+          fontWeight: "bold",
+          fontSize: "1rem",
+          cursor: "pointer",
+          zIndex: 999,
+          boxShadow: "0 0 10px rgba(0,0,0,0.3)"
+        }}
+      >
+        Connect Wallet 
+      </button>
+    )}
+  </>
+)}
+
+
+
+
 
 
 <Router>
