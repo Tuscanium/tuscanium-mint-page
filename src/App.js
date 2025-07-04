@@ -129,7 +129,7 @@ setMintedCount(Number(minted));
             style={{ width: "100%", borderRadius: "8px", display: "block" }}
           />
           <p style={{ fontSize: "1rem", textAlign: "center", marginTop: "0.5rem", color: "#ccc" }}>
-            {mintedCount} / {currentPhase.maxSupply} already minted
+            {mintedCount} / {currentPhase.maxSupply} already minted 
           </p>
         </div>
 
@@ -1017,33 +1017,58 @@ const tx = await contract.mint(id, amount, {
 
 {!walletConnected && (
   <>
-    {isMobile && !menuOpen && (
-  <a
-    href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      position: "fixed",
-      bottom: "1rem",
-      right: "1rem",
-      padding: "0.8rem 1.4rem",
-      backgroundColor: "#ffa500",
-      border: "none",
-      borderRadius: "8px",
-      color: "#000",
-      fontWeight: "bold",
-      fontSize: "1rem",
-      textDecoration: "none",
-      textAlign: "center",
-      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-      zIndex: 999
-    }}
-  >
-    🦊 Open in MetaMask
-  </a>
-)}
+    {/* MOBILE: Open in MetaMask */}
+    {isMobile && !walletConnected && !window.ethereum && !menuOpen && (
+      <a
+        href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: "fixed",
+          bottom: "1rem",
+          right: "1rem",
+          padding: "0.8rem 1.4rem",
+          backgroundColor: "#ffa500",
+          border: "none",
+          borderRadius: "8px",
+          color: "#000",
+          fontWeight: "bold",
+          fontSize: "1rem",
+          textDecoration: "none",
+          textAlign: "center",
+          boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+          zIndex: 999
+        }}
+      >
+        🦊 Open in MetaMask
+      </a>
+    )}
 
+    {/* MOBILE: Connect Wallet */}
+    {isMobile && !walletConnected && !!window.ethereum && (
+      <button
+        onClick={connectWallet}
+        style={{
+          position: "fixed",
+          bottom: "1rem",
+          right: "1rem",
+          padding: "0.8rem 1.4rem",
+          backgroundColor: "#ffa500",
+          border: "none",
+          borderRadius: "8px",
+          color: "#000",
+          fontWeight: "bold",
+          fontSize: "1rem",
+          cursor: "pointer",
+          zIndex: 999,
+          boxShadow: "0 0 10px rgba(0,0,0,0.3)"
+        }}
+      >
+        Connect Wallet
+      </button>
+    )}
 
+    {/* DESKTOP: Connect Wallet */}
     {!isMobile && (
       <button
         onClick={connectWallet}
@@ -1063,11 +1088,12 @@ const tx = await contract.mint(id, amount, {
           boxShadow: "0 0 10px rgba(0,0,0,0.3)"
         }}
       >
-        Connect Wallet 
+        Connect Wallet
       </button>
     )}
   </>
 )}
+
 
 
 
