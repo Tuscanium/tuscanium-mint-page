@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BrowserProvider, Contract, parseEther, formatEther } from "ethers";
 import RedeemForm from "./RedeemForm";
+import { Analytics } from "@vercel/analytics/react";
+
 
 const CONTRACT_ADDRESS = "0xa6A846f7C9d98709CE24430B59319a5A7F9ecD92";
 
@@ -1103,6 +1105,7 @@ const tx = await contract.mint(id, amount, {
 </footer>
 
 
+<Analytics />
       </div>
     </>
   );
