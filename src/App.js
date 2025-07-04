@@ -1019,29 +1019,36 @@ const tx = await contract.mint(id, amount, {
   <>
     {/* MOBILE: Open in MetaMask */}
     {isMobile && !walletConnected && !window.ethereum && !menuOpen && (
-      <a
-        href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          position: "fixed",
-          bottom: "1rem",
-          right: "1rem",
-          padding: "0.8rem 1.4rem",
-          backgroundColor: "#ffa500",
-          border: "none",
-          borderRadius: "8px",
-          color: "#000",
-          fontWeight: "bold",
-          fontSize: "1rem",
-          textDecoration: "none",
-          textAlign: "center",
-          boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-          zIndex: 999
-        }}
-      >
-        🦊 Open in MetaMask
-      </a>
+   <a
+  href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{
+    position: "fixed",
+    bottom: "1rem",
+    right: "1rem",
+    padding: "0.8rem 1.4rem",
+    backgroundColor: "#ffa500",
+    border: "none",
+    borderRadius: "8px",
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: "0.95rem",
+    textDecoration: "none",
+    textAlign: "center",
+    boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+    zIndex: 999,
+    maxWidth: "220px",
+    lineHeight: "1.4",
+  }}
+>
+  🦊 Open in MetaMask
+  <br />
+  <span style={{ fontSize: "0.8rem", fontWeight: "normal" }}>
+    (Or open MetaMask app, tap Browser and search tuscanium.vercel.app)
+  </span>
+</a>
+
     )}
 
     {/* MOBILE: Connect Wallet */}
