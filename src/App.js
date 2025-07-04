@@ -319,9 +319,23 @@ function AboutUs() {
         We envision a brand that transcends boundaries, combining the emotional impact of art with the transparency of decentralized technology and the richness of real-world craftsmanship. Becoming part of Tuscanium means joining a community driven by trust, ambition, and the desire to build something lasting and meaningful.
       </p>
 
-      <p style={{ marginBottom: "1.5rem" }}>
-        Together, we are shaping a journey that connects past and future, local culture and global perspectives — and positions Tuscanium as a powerful reference point in the evolving world of art, crypto, and beyond.
-      </p>
+      <img
+  src="/images/products.png"
+  alt="Tuscanium Products"
+  style={{
+    width: "100%",
+    maxWidth: "500px",
+    display: "block",
+    margin: "2rem auto",
+    borderRadius: "12px",
+    boxShadow: "0 0 15px #0ff8",
+  }}
+/>
+
+<p style={{ marginBottom: "1.5rem" }}>
+  Together, we are shaping a journey that connects past and future, local culture and global perspectives — and positions Tuscanium as a powerful reference point in the evolving world of art, crypto, and beyond.
+</p>
+
 
       <p style={{ marginTop: "2rem", fontWeight: "600", fontSize: "1.3rem" }}>
         Welcome to Tuscanium. Welcome to your transformation.
@@ -598,7 +612,7 @@ function RedeemCanvas({
         marginTop: "3rem",
       }}
     >
-      <h1 style={{ textAlign: "center", fontSize: "2rem", marginBottom: "1rem" }}>
+      <h1 style={{ textAlign: "center", fontSize: "2rem", marginBottom: "1.5rem" }}>
         🎁 Redeem Your Canvas
       </h1>
       <p
@@ -698,9 +712,30 @@ function RedeemCanvas({
           </button>
         </div>
 
-        <p style={{ marginTop: "0.5rem", fontSize: "0.95rem", color: "#aaa" }}>
-          The form for address and details will appear after the transaction is confirmed.
-        </p>
+      <p
+  style={{
+    marginTop: "0.5rem",
+    fontSize: "0.95rem",
+    color: "lime",
+    fontWeight: "bold",
+  }}
+>
+  The form for address and details will appear after the transaction is confirmed.
+</p>
+
+<div style={{ marginTop: "2rem", textAlign: "center" }}>
+  <img
+    src="/images/tela.png"
+    alt="Your Exclusive Canvas"
+    style={{
+      width: "400px",
+      maxWidth: "90vw",
+      borderRadius: "12px",
+      boxShadow: "0 0 15px rgba(0,255,255,0.4)",
+    }}
+  />
+</div>
+
 
         {/* Show RedeemForm if one of the two transactions is confirmed */}
         {(walletAddress && (burnTxHash || purchaseTxHash)) && (
@@ -898,6 +933,36 @@ const tx = await contract.mint(id, amount, {
     font-family: 'Poppins', sans-serif;
   }
 `}</style>
+
+<style>{`
+  @media (max-width: 768px) {
+    main h1 {
+      margin-top: 3rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+  }
+`}</style>
+
+
+<style>{`
+  @media (max-width: 768px) {
+    main h1 {
+      margin-top: 3rem !important;
+    }
+  }
+`}</style>
+
+
+<style>{`
+  @media (max-width: 768px) {
+    img[alt="Logo"] {
+      width: 50px !important;
+      top: 0.5rem !important;
+      right: 0.5rem !important;
+    }
+  }
+`}</style>
+
 <style>{`
   @media (max-width: 768px) {
     body, div, p, h1, h2, h3, li {
@@ -948,27 +1013,7 @@ const tx = await contract.mint(id, amount, {
             pointerEvents: "none"
           }}
         />
-    {isMobile && (
-  <button
-    onClick={() => setMenuOpen(!menuOpen)}
-    style={{
-      position: "fixed",
-      top: "1rem",
-      left: "1rem",
-      padding: "0.6rem 1.2rem",
-      backgroundColor: "#0ff",
-      border: "none",
-      borderRadius: "6px",
-      color: "#000",
-      fontWeight: "bold",
-      fontSize: "0.95rem",
-      cursor: "pointer",
-      zIndex: 99,
-    }}
-  >
-    {menuOpen ? "✖ Close" : "☰ Menu"}
-  </button>
-)}
+
 
 {!walletConnected && (
   <>
@@ -1028,27 +1073,58 @@ const tx = await contract.mint(id, amount, {
 
 
 
-
 <Router>
-  <nav
-    style={{
-      width: isMobile ? (menuOpen ? "200px" : "0") : "260px",
-      backgroundColor: "#111",
-      padding: isMobile ? (menuOpen ? "2rem" : "0") : "2rem",
-      display: "flex",
-      flexDirection: "column",
-      gap: "1.5rem",
-      position: isMobile ? "fixed" : "sticky",
-      top: 0,
-      height: "100vh",
-      boxSizing: "border-box",
-      overflow: "hidden",
-      opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
-      pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
-      transition: "all 0.3s ease",
-      zIndex: 50,
-    }}
-  >
+  {/* Bottone fisso in alto a sinistra SOLO su mobile */}
+  {isMobile && (
+    <button
+      onClick={() => setMenuOpen(!menuOpen)}
+      style={{
+        position: "fixed",
+        top: "1rem",
+        left: "1rem",
+        padding: "0.6rem 1.2rem",
+        backgroundColor: menuOpen ? "#ff4444" : "#0ff",
+        border: "none",
+        borderRadius: "6px",
+        color: "#000",
+        fontWeight: "bold",
+        fontSize: "0.95rem",
+        cursor: "pointer",
+        zIndex: 999,
+        transition: "background 0.2s ease",
+      }}
+    >
+      {menuOpen ? "✖ Close" : "☰ Menu"}
+    </button>
+  )}
+
+ <nav
+  style={{
+    width: isMobile ? (menuOpen ? "75%" : "0") : "260px",
+    backgroundColor: "#111",
+    padding: isMobile ? (menuOpen ? "2rem" : "0") : "2rem",
+    paddingTop: isMobile
+      ? menuOpen
+        ? "6rem"   // 👈 Aumentato da 4rem a 6rem
+        : "0"
+      : "2rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5rem",
+    position: isMobile ? "fixed" : "sticky",
+    top: 0,
+    height: "100vh",
+    boxSizing: "border-box",
+    overflow: "hidden",
+    opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
+    pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
+    transition: "all 0.3s ease, padding-top 0.3s ease",
+    zIndex: 50,
+  }}
+>
+
+    
+
     <Link
       to="/about"
       style={{
