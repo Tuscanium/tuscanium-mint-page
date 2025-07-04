@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { BrowserProvider, Contract, parseEther, formatEther } from "ethers";
 import RedeemForm from "./RedeemForm";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+
+
+
+
 
 
 const CONTRACT_ADDRESS = "0xa6A846f7C9d98709CE24430B59319a5A7F9ecD92";
@@ -568,7 +573,17 @@ function HowToBuy() {
   );
 }
 
-function RedeemCanvas({ burnVoucher, burning, burnError, burnSuccess, walletConnected, burnTxHash, walletAddress }) {
+function RedeemCanvas({
+  burnVoucher,
+  burning,
+  burnError,
+  burnSuccess,
+  walletConnected,
+  burnTxHash,
+  purchaseTxHash,
+    walletAddress,
+  buyCanvas 
+}) {
   return (
     <div
       style={{
@@ -577,60 +592,66 @@ function RedeemCanvas({ burnVoucher, burning, burnError, burnSuccess, walletConn
         margin: "0 auto",
         color: "#fff",
         fontFamily: "'Poppins', sans-serif",
-            marginTop: "3rem",
+        marginTop: "3rem",
       }}
     >
       <h1 style={{ textAlign: "center", fontSize: "2rem", marginBottom: "1rem" }}>
         🎁 Redeem Your Canvas
       </h1>
-      <p style={{ textAlign: "center", fontSize: "1.1rem", marginBottom: "2rem", color: "#ccc" }}>
-        By minting Phase 1, you received a special voucher NFT. Burn it here to unlock the form
-        to request your exclusive canvas painting delivered to your home for free.
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: "1.1rem",
+          marginBottom: "2rem",
+          color: "#ccc",
+        }}
+      >
+        By minting Phase 1, you received a special voucher NFT. Burn it here or pay directly to unlock the form to request your exclusive canvas painting delivered to your home.
       </p>
 
-     <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "1.5rem",
-    marginBottom: "2rem",
-    flexWrap: "wrap",
-  }}
->
-  {/* Voucher Image */}
-  <img
-    src="/images/6.png"
-    alt="Voucher NFT"
-    style={{
-      width: "200px",
-      height: "auto",
-      borderRadius: "12px",
-      boxShadow: "0 0 10px rgba(0,255,255,0.3)",
-    }}
-  />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "1.5rem",
+          marginBottom: "2rem",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Voucher Image */}
+        <img
+          src="/images/6.png"
+          alt="Voucher NFT"
+          style={{
+            width: "200px",
+            height: "auto",
+            borderRadius: "12px",
+            boxShadow: "0 0 10px rgba(0,255,255,0.3)",
+          }}
+        />
 
-  {/* Arrow + flame */}
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-    <span style={{ fontSize: "2rem", color: "lime" }}>➡️</span>
-    <span style={{ fontSize: "1.5rem" }}>🔥</span>
-  </div>
+        {/* Arrow + flame */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <span style={{ fontSize: "2rem", color: "lime" }}>➡️</span>
+          <span style={{ fontSize: "1.5rem" }}>🔥</span>
+        </div>
 
-  {/* Tela Image */}
-  <img
-    src="/images/tela.png"
-    alt="Canvas"
-    style={{
-      width: "200px",
-      height: "auto",
-      borderRadius: "12px",
-      boxShadow: "0 0 10px rgba(0,255,255,0.3)",
-    }}
-  />
-</div>
-
+        {/* Tela Image */}
+        <img
+          src="/images/tela.png"
+          alt="Canvas"
+          style={{
+            width: "200px",
+            height: "auto",
+            borderRadius: "12px",
+            boxShadow: "0 0 10px rgba(0,255,255,0.3)",
+          }}
+        />
+      </div>
 
       <div style={{ textAlign: "center" }}>
+        {/* Button Burn */}
         <button
           onClick={burnVoucher}
           disabled={burning || !walletConnected}
@@ -649,25 +670,53 @@ function RedeemCanvas({ burnVoucher, burning, burnError, burnSuccess, walletConn
           {burning ? "Burning..." : "🔥 Burn Voucher"}
         </button>
 
+        <p style={{ margin: "1rem 0", fontSize: "1.2rem", fontWeight: "bold", color: "#999" }}>
+          OR
+        </p>
+
+        {/* Button Buy */}
+        <div style={{ marginBottom: "1rem" }}>
+          <button
+            onClick={buyCanvas}
+            disabled={burning || !walletConnected}
+            style={{
+              padding: "1rem 2rem",
+              fontSize: "1.2rem",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: burning ? "#888" : "#ff9900",
+              color: "#000",
+              fontWeight: "bold",
+              cursor: burning || !walletConnected ? "not-allowed" : "pointer",
+              transition: "background 0.3s ease",
+            }}
+          >
+            {burning ? "Processing..." : "💰 Buy Now - 0.049 ETH"}
+          </button>
+        </div>
+
+        <p style={{ marginTop: "0.5rem", fontSize: "0.95rem", color: "#aaa" }}>
+          The form for address and details will appear after the transaction is confirmed.
+        </p>
+
+        {/* Show RedeemForm if one of the two transactions is confirmed */}
+        {(walletAddress && (burnTxHash || purchaseTxHash)) && (
+          <RedeemForm
+            burnTxHash={burnTxHash || purchaseTxHash}
+            walletAddress={walletAddress}
+          />
+        )}
+
         {burnError && (
           <p style={{ color: "red", marginTop: "1rem" }}>{burnError}</p>
         )}
         {burnSuccess && (
           <p style={{ color: "lightgreen", marginTop: "1rem" }}>{burnSuccess}</p>
         )}
-     {burnTxHash && walletAddress && (
-  <>
-    {console.log("DEBUG RENDER FORM", { burnTxHash, walletAddress })}
-    <RedeemForm burnTxHash={burnTxHash} walletAddress={walletAddress} />
-  </>
-)}
-
-
       </div>
     </div>
   );
 }
-
 
 
 export default function App() {
@@ -681,6 +730,7 @@ const [burnError, setBurnError] = useState("");
 const [burnSuccess, setBurnSuccess] = useState("");
 const [walletAddress, setWalletAddress] = useState(null);
 const [burnTxHash, setBurnTxHash] = useState(null);
+const [purchaseTxHash, setPurchaseTxHash] = useState(null);
 const [menuOpen, setMenuOpen] = useState(false);
 const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -724,6 +774,37 @@ async function burnVoucher() {
   setBurning(false);
 }
 
+async function buyCanvas() {
+  if (!window.ethereum) {
+    setBurnError("Please install MetaMask to buy your canvas.");
+    return;
+  }
+
+  setBurning(true);
+  setBurnError("");
+  setBurnSuccess("");
+
+  try {
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const tx = await signer.sendTransaction({
+      to: "0xe025f9cd90b99b3590c185cbf1ae5e1444148240", // Indirizzo destinatario ETH
+      value: parseEther("0.049")
+    });
+
+    console.log("Buy tx:", tx);
+
+    setWalletAddress(await signer.getAddress());
+    setPurchaseTxHash(tx.hash);
+
+    setBurnSuccess("Payment successful! 🎉 You can now fill in the shipping form.");
+  } catch (err) {
+    setBurnError("Payment failed: " + (err?.info?.error?.message || err.message));
+  }
+
+  setBurning(false);
+}
 
 
 
@@ -879,169 +960,172 @@ const tx = await contract.mint(id, amount, {
   </button>
 )}
 
+
+<Router>
   <nav
-  style={{
-    width: isMobile ? (menuOpen ? "200px" : "0") : "260px",
-    backgroundColor: "#111",
-    padding: isMobile ? (menuOpen ? "2rem" : "0") : "2rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "1.5rem",
-    position: isMobile ? "fixed" : "sticky",
-    top: 0,
-    height: "100vh",
-    boxSizing: "border-box",
-    overflow: "hidden",
-    opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
-    pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
-    transition: "all 0.3s ease",
-    zIndex: 50
-  }}
->
-
-
->
-
-
-
-  <button
-    onClick={() => setPage("about")}
     style={{
-      background: page === "about" ? "#333" : "transparent",
-      border: "none",
-      color: "#fff",
-      fontSize: "1.1rem",
-      padding: "0.75rem 1rem",
-      cursor: "pointer",
-      borderRadius: "6px",
-      textAlign: "left",
+      width: isMobile ? (menuOpen ? "200px" : "0") : "260px",
+      backgroundColor: "#111",
+      padding: isMobile ? (menuOpen ? "2rem" : "0") : "2rem",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1.5rem",
+      position: isMobile ? "fixed" : "sticky",
+      top: 0,
+      height: "100vh",
+      boxSizing: "border-box",
+      overflow: "hidden",
+      opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
+      pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
       transition: "all 0.3s ease",
+      zIndex: 50,
     }}
   >
-    About Us
-  </button>
-  <button
-    onClick={() => setPage("mint")}
+    <Link
+      to="/about"
+      style={{
+        color: "#fff",
+        fontSize: "1.1rem",
+        padding: "0.75rem 1rem",
+        textDecoration: "none",
+        borderRadius: "6px",
+        transition: "all 0.3s ease",
+      }}
+      onClick={() => isMobile && setMenuOpen(false)}
+    >
+      About Us
+    </Link>
+    <Link
+      to="/mint"
+      style={{
+        color: "#fff",
+        fontSize: "1.1rem",
+        padding: "0.75rem 1rem",
+        textDecoration: "none",
+        borderRadius: "6px",
+        transition: "all 0.3s ease",
+      }}
+      onClick={() => isMobile && setMenuOpen(false)}
+    >
+      Mint
+    </Link>
+    <Link
+      to="/collections"
+      style={{
+        color: "#fff",
+        fontSize: "1.1rem",
+        padding: "0.75rem 1rem",
+        textDecoration: "none",
+        borderRadius: "6px",
+        transition: "all 0.3s ease",
+      }}
+      onClick={() => isMobile && setMenuOpen(false)}
+    >
+      Our Collections
+    </Link>
+    <Link
+      to="/roadmap"
+      style={{
+        color: "#fff",
+        fontSize: "1.1rem",
+        padding: "0.75rem 1rem",
+        textDecoration: "none",
+        borderRadius: "6px",
+        transition: "all 0.3s ease",
+      }}
+      onClick={() => isMobile && setMenuOpen(false)}
+    >
+      Roadmap
+    </Link>
+    <Link
+      to="/howtobuy"
+      style={{
+        color: "#fff",
+        fontSize: "1.1rem",
+        padding: "0.75rem 1rem",
+        textDecoration: "none",
+        borderRadius: "6px",
+        transition: "all 0.3s ease",
+      }}
+      onClick={() => isMobile && setMenuOpen(false)}
+    >
+      How to Buy
+    </Link>
+    <Link
+      to="/redeem"
+      style={{
+        color: "#fff",
+        fontSize: "1.1rem",
+        padding: "0.75rem 1rem",
+        textDecoration: "none",
+        borderRadius: "6px",
+        transition: "all 0.3s ease",
+      }}
+      onClick={() => isMobile && setMenuOpen(false)}
+    >
+      Redeem free Canvas 🎁
+    </Link>
+  </nav>
+
+  <main
     style={{
-      background: page === "mint" ? "#333" : "transparent",
-      border: "none",
-      color: "#fff",
-      fontSize: "1.1rem",
-      padding: "0.75rem 1rem",
-      cursor: "pointer",
-      borderRadius: "6px",
-      textAlign: "left",
-      transition: "all 0.3s ease",
+      flexGrow: 1,
+      overflowY: "auto",
+      animation: "fadeIn 0.8s ease-in-out",
     }}
   >
-    Mint
-  </button>
-  <button
-    onClick={() => setPage("collections")}
-    style={{
-      background: page === "collections" ? "#333" : "transparent",
-      border: "none",
-      color: "#fff",
-      fontSize: "1.1rem",
-      padding: "0.75rem 1rem",
-      cursor: "pointer",
-      borderRadius: "6px",
-      textAlign: "left",
-      transition: "all 0.3s ease",
-    }}
-  >
-    Our Collections
-  </button>
-  <button
-    onClick={() => setPage("roadmap")}
-    style={{
-      background: page === "roadmap" ? "#333" : "transparent",
-      border: "none",
-      color: "#fff",
-      fontSize: "1.1rem",
-      padding: "0.75rem 1rem",
-      cursor: "pointer",
-      borderRadius: "6px",
-      textAlign: "left",
-      transition: "all 0.3s ease",
-    }}
-  >
-    Roadmap
-  </button>
-    <button
-    onClick={() => setPage("howtobuy")}
-    style={{
-      background: page === "howtobuy" ? "#333" : "transparent",
-      border: "none",
-      color: "#fff",
-      fontSize: "1.1rem",
-      padding: "0.75rem 1rem",
-      cursor: "pointer",
-      borderRadius: "6px",
-      textAlign: "left",
-      transition: "all 0.3s ease",
-    }}
-  >
-    How to Buy
-  </button>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <MintPage
+            onMint={mint}
+            minting={minting}
+            error={error}
+            success={success}
+            walletConnected={walletConnected}
+            connectWallet={connectWallet}
+          />
+        }
+      />
+      <Route path="/about" element={<AboutUs />} />
+      <Route
+        path="/mint"
+        element={
+          <MintPage
+            onMint={mint}
+            minting={minting}
+            error={error}
+            success={success}
+            walletConnected={walletConnected}
+            connectWallet={connectWallet}
+          />
+        }
+      />
+      <Route path="/collections" element={<OurCollections />} />
+      <Route path="/roadmap" element={<Roadmap />} />
+      <Route path="/howtobuy" element={<HowToBuy />} />
+      <Route
+        path="/redeem"
+        element={
+          <RedeemCanvas
+            burnVoucher={burnVoucher}
+            burning={burning}
+            burnError={burnError}
+            burnSuccess={burnSuccess}
+            walletConnected={walletConnected}
+            burnTxHash={burnTxHash}
+            purchaseTxHash={purchaseTxHash}
+            walletAddress={walletAddress}
+            buyCanvas={buyCanvas}
+          />
+        }
+      />
+    </Routes>
+  </main>
+</Router>
 
-  <button
-    onClick={() => setPage("redeem")}
-    style={{
-      background: page === "redeem" ? "#333" : "transparent",
-      border: "none",
-      color: "#fff",
-      fontSize: "1.1rem",
-      padding: "0.75rem 1rem",
-      cursor: "pointer",
-      borderRadius: "6px",
-      textAlign: "left",
-      transition: "all 0.3s ease",
-    }}
-  >
-    Redeem free Canvas 🎁
-  </button>
-</nav>
-
-
- <main
-  style={{
-    flexGrow: 1,
-    overflowY: "auto",
-    animation: "fadeIn 0.8s ease-in-out",
-  }}
->
-  {page === "about" ? (
-    <AboutUs />
-  ) : page === "mint" ? (
-    <MintPage
-      onMint={mint}
-      minting={minting}
-      error={error}
-      success={success}
-      walletConnected={walletConnected}
-      connectWallet={connectWallet}
-    />
-  ) : page === "collections" ? (
-    <OurCollections />
-  ) : page === "roadmap" ? (
-    <Roadmap />
-  ) : page === "howtobuy" ? (
-    <HowToBuy />
-  ) : page === "redeem" ? (
-    <RedeemCanvas
-  burnVoucher={burnVoucher}
-  burning={burning}
-  burnError={burnError}
-  burnSuccess={burnSuccess}
-  walletConnected={walletConnected}
-  burnTxHash={burnTxHash}
-  walletAddress={walletAddress}
-/>
-
-  ) : null}
-</main>
-
+ 
 <footer
   style={{
     width: "100%",
@@ -1104,9 +1188,9 @@ const tx = await contract.mint(id, amount, {
   </div>
 </footer>
 
-
 <Analytics />
-      </div>
-    </>
-  );
+
+</div>
+</>
+);
 }
