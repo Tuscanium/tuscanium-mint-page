@@ -47,7 +47,7 @@ const keyframes = `
 
 function MintPage({ onMint, minting, error, success, walletConnected, connectWallet }) {
   const [currentPhaseId, setCurrentPhaseId] = useState(0);
-  const [mintedCount, setMintedCount] = useState(0);
+  const [mintedCount, setMintedCount] = useState(3);
   const [hasDiscount, setHasDiscount] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
   const [basePrice, setBasePrice] = useState(0);
