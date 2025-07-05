@@ -146,7 +146,7 @@ setMintedCount(Number(minted));
     </span>{" "}
     of value that you can even insta-flip for <b>every holder</b>
   </li>
-  <li>✅ 10% discount on next mint phases</li>
+  <li>✅ 10% extra discount on next mint phases</li>
   <li>
     ✅{" "}
     <span style={{ color: "lime", fontWeight: "bold" }}>
@@ -250,7 +250,7 @@ setMintedCount(Number(minted));
     style={{
       color: "#0ff",
       textDecoration: "underline",
-      fontSize: "1.1rem",
+      fontSize: "1.7rem",
       fontWeight: "bold"
     }}
   >
@@ -548,7 +548,7 @@ return (
         color: "#0ff",
         textDecoration: "underline",
         fontWeight: "bold",
-        fontSize: "1.2rem",
+        fontSize: "1.7rem",
         display: "inline-block",
         marginTop: "1rem",
       }}
@@ -632,7 +632,16 @@ function RedeemCanvas({
           color: "#ccc",
         }}
       >
-        By minting Phase 1, you received a special voucher NFT. Burn it here or pay directly to unlock the form to request your exclusive canvas painting delivered to your home.
+<p
+  style={{
+    textAlign: "center",
+    fontSize: "1.1rem",
+    marginBottom: "2rem",
+    color: "#ccc",
+  }}
+>
+  By minting <b>Phase 1</b>, you will receive a voucher NFT which, once <b>burned</b>, lets you claim your exclusive canvas painting completely <b style={{ color: "lime" }}>free of charge</b>. Alternatively, you can purchase the canvas directly.
+</p>
       </p>
 
       <div
