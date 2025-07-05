@@ -46,7 +46,7 @@ const keyframes = `
 `;
 
 function MintPage({ onMint, minting, error, success, walletConnected, connectWallet }) {
-  const [currentPhaseId, setCurrentPhaseId] = useState(0);
+  const [currentPhaseId, setCurrentPhaseId] = useState(3);
   const [mintedCount, setMintedCount] = useState(0);
   const [hasDiscount, setHasDiscount] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
@@ -1270,12 +1270,14 @@ const tx = await contract.mint(id, amount, {
   </nav>
 
   <main
-    style={{
-      flexGrow: 1,
-      overflowY: "auto",
-      animation: "fadeIn 0.8s ease-in-out",
-    }}
-  >
+  style={{
+    flexGrow: 1,
+    overflowY: "auto",
+    animation: "fadeIn 0.8s ease-in-out",
+    paddingBottom: isMobile ? "6rem" : "2rem", // 🔹 SOLO su mobile aggiunge spazio
+  }}
+>
+
     <Routes>
       <Route
         path="/"
