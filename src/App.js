@@ -1269,13 +1269,15 @@ const tx = await contract.mint(id, amount, {
     </Link>
   </nav>
 
-  <main
-    style={{
-      flexGrow: 1,
-      overflowY: "auto",
-      animation: "fadeIn 0.8s ease-in-out",
-    }}
-  >
+ <main
+  style={{
+    flexGrow: 1,
+    overflowY: "auto",
+    animation: "fadeIn 0.8s ease-in-out",
+    paddingBottom: isMobile ? "6rem" : "2rem", // 🔹 SOLO su mobile aggiunge spazio
+  }}
+>
+
     <Routes>
       <Route
         path="/"
