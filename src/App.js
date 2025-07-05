@@ -1355,10 +1355,11 @@ const tx = await contract.mint(id, amount, {
         textDecoration: "none",
         display: "flex",
         alignItems: "center",
-        gap: "0.4rem",
+         gap: "0.6rem",
+  fontSize: "1.05rem",
       }}
     >
-      <img src="/images/instagram.png" alt="Instagram" style={{ width: "18px", height: "18px" }} />
+      <img src="/images/instagram.png" alt="Instagram" style={{ width: "22px", height: "22px" }} />
       Instagram
     </a>
     <a
@@ -1370,10 +1371,11 @@ const tx = await contract.mint(id, amount, {
         textDecoration: "none",
         display: "flex",
         alignItems: "center",
-        gap: "0.4rem",
+         gap: "0.6rem",
+  fontSize: "1.05rem",
       }}
     >
-      <img src="/images/x.png" alt="X" style={{ width: "18px", height: "18px" }} />
+      <img src="/images/x.png" alt="X" style={{ width: "22px", height: "22px" }} />
       X
     </a>
     <a
@@ -1385,10 +1387,11 @@ const tx = await contract.mint(id, amount, {
         textDecoration: "none",
         display: "flex",
         alignItems: "center",
-        gap: "0.4rem",
+         gap: "0.6rem",
+  fontSize: "1.05rem",
       }}
     >
-      <img src="/images/discord.png" alt="Discord" style={{ width: "18px", height: "18px" }} />
+      <img src="/images/discord.png" alt="Discord" style={{ width: "22px", height: "22px" }} />
       Discord
     </a>
   </div>
