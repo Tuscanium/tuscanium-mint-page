@@ -54,9 +54,9 @@ function MintPage({ onMint, minting, error, success, walletConnected, connectWal
   const [isPhaseActive, setIsPhaseActive] = useState(true);
 
   const PHASES = [
-    { id: 0, label: "Phase 0", image: "/images/0.png", maxSupply: 500 },
-    { id: 1, label: "Phase 1", image: "/images/1.png", maxSupply: 500 },
-    { id: 2, label: "Phase 2", image: "/images/2.png", maxSupply: 500 }
+    { id: 0, label: "Phase 0", image: "/images/0.png", maxSupply: 100 },
+    { id: 1, label: "Phase 1", image: "/images/1.png", maxSupply: 100 },
+    { id: 2, label: "Phase 2", image: "/images/2.png", maxSupply: 100 }
   ];
 
   const currentPhase = PHASES[currentPhaseId];
@@ -791,6 +791,135 @@ function requireConnection(walletConnected, connectWallet, action) {
 }
 
 
+function Products() {
+  return (
+    <div
+      style={{
+        padding: "3rem 1.5rem",
+        maxWidth: "900px",
+        margin: "0 auto",
+        color: "#fff",
+        fontFamily: "'Poppins', sans-serif",
+        lineHeight: "1.7",
+        textAlign: "center",
+      }}
+    >
+      {/* Hero */}
+      <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>
+        Own an Exclusive Canvas of the Iconic David
+      </h1>
+      <p style={{ fontSize: "1.2rem", marginBottom: "2rem", color: "#ccc" }}>
+        Limited edition artwork – crafted to inspire your space.
+      </p>
+      <img
+        src="/images/tela.png"
+        alt="David Canvas"
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          borderRadius: "12px",
+          marginBottom: "2rem",
+          boxShadow: "0 0 15px rgba(0,255,255,0.3)",
+        }}
+      />
+{/* Price */}
+<p style={{ fontSize: "1.4rem", marginBottom: "1rem" }}>
+  <span
+    style={{
+      textDecoration: "line-through",
+      color: "#888",
+      marginRight: "0.5rem",
+    }}
+  >
+    €199
+  </span>
+  <b style={{ color: "lime" }}>Now €99</b>
+</p>
+
+
+      {/* CTA */}
+      <button
+        style={{
+          backgroundColor: "#0ff",
+          color: "#000",
+          fontWeight: "bold",
+          fontSize: "1.2rem",
+          padding: "1rem 2.5rem",
+          borderRadius: "8px",
+          border: "none",
+          cursor: "pointer",
+          marginBottom: "1rem",
+        }}
+        onClick={() => window.location.href = "mailto:info@tuscanium.com?subject=Order Canvas"}
+      >
+        Get Your Canvas Now
+      </button>
+
+      <p style={{ fontSize: "0.95rem", color: "#ccc" }}>
+        Secure checkout via PayPal or credit card. Ships worldwide.
+      </p>
+
+      {/* Features */}
+      <div
+        style={{
+          marginTop: "3rem",
+          textAlign: "left",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1.5rem",
+        }}
+      >
+        <div>
+          <h2 style={{ color: "#0ff", fontSize: "1.4rem", marginBottom: "0.5rem" }}>
+            Why Choose This Limited Edition?
+          </h2>
+          <ul style={{ paddingLeft: "1rem", listStyle: "none", lineHeight: "1.8" }}>
+            <li>
+              🎨 <b>Unique Art</b> – A striking reinterpretation of Michelangelo’s masterpiece.
+            </li>
+            <li>
+              🖼 <b>Exclusive Canvas</b> – Numbered and signed certificate of authenticity.
+            </li>
+            <li>
+              🚚 <b>Fast Delivery</b> – Ready to hang, shipped securely to your door.
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2 style={{ color: "#0ff", fontSize: "1.4rem", marginBottom: "0.5rem" }}>
+            Bonus: Free Digital Certificate
+          </h2>
+          <p>
+            As a collector, you’ll also receive a{" "}
+            <b style={{ color: "lime" }}>free digital certificate</b> proving the originality of
+            your artwork.
+          </p>
+        </div>
+      </div>
+
+      {/* Footer Call */}
+      <div style={{ marginTop: "3rem" }}>
+        <button
+          style={{
+            backgroundColor: "#0ff",
+            color: "#000",
+            fontWeight: "bold",
+            fontSize: "1.2rem",
+            padding: "1rem 2.5rem",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+          }}
+          onClick={() => window.location.href = "mailto:info@tuscanium.com?subject=Order Canvas"}
+        >
+          Order Yours Today
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
 export default function App() {
   const [minting, setMinting] = useState(false);
   const [error, setError] = useState("");
@@ -1288,10 +1417,9 @@ const tx = await contract.mint(id, amount, {
 >
 
     <Routes>
-      <Route
+      <Route  
         path="/"
-        element={
-          <MintPage
+        element={<MintPage
             onMint={mint}
             minting={minting}
             error={error}
@@ -1318,6 +1446,8 @@ const tx = await contract.mint(id, amount, {
       <Route path="/collections" element={<OurCollections />} />
       <Route path="/roadmap" element={<Roadmap />} />
       <Route path="/howtobuy" element={<HowToBuy />} />
+      <Route path="/products" element={<Products />} />
+
       <Route
   path="/redeem"
   element={
