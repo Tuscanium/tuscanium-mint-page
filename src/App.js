@@ -284,13 +284,13 @@ function MintPage({ onMint, minting, error, success, walletConnected, connectWal
 
 function EtherealMint({ walletConnected, connectWallet }) {
   const ITEMS = [
-    { id: 0, label: "Perseo",     image: "/images/ethereal/0.png", max: 25,  price: 0.079 },
-    { id: 4, label: "Dante",      image: "/images/ethereal/4.png", max: 30,  price: 0.065 },
-    { id: 1, label: "Galileo",    image: "/images/ethereal/1.png", max: 40,  price: 0.04 },
-    { id: 2, label: "Cosimo",     image: "/images/ethereal/2.png", max: 50,  price: 0.032 },
-    { id: 3, label: "Colossus",   image: "/images/ethereal/3.png", max: 100, price: 0.025 },
-    { id: 5, label: "Marzocco",   image: "/images/ethereal/5.png", max: 500, price: 0.0069 },
-    { id: 6, label: "Boar",       image: "/images/ethereal/6.png", max: 500, price: 0.0069 },
+    { id: 0, label: "Perseo",     image: "/images/ethereal/0.webp", max: 25,  price: 0.079 },
+    { id: 4, label: "Dante",      image: "/images/ethereal/4.webp", max: 30,  price: 0.065 },
+    { id: 1, label: "Galileo",    image: "/images/ethereal/1.webp", max: 40,  price: 0.04 },
+    { id: 2, label: "Cosimo",     image: "/images/ethereal/2.webp", max: 50,  price: 0.032 },
+    { id: 3, label: "Colossus",   image: "/images/ethereal/3.webp", max: 100, price: 0.025 },
+    { id: 5, label: "Marzocco",   image: "/images/ethereal/5.webp", max: 500, price: 0.0069 },
+    { id: 6, label: "Boar",       image: "/images/ethereal/6.webp", max: 500, price: 0.0069 },
   ];
 
   const [active, setActive] = React.useState(0);
