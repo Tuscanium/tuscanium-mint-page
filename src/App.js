@@ -1,15 +1,21 @@
+/* global BigInt */
 import React, { useState, useEffect } from "react";
-import { BrowserProvider, Contract, parseEther, formatEther } from "ethers";
+import { BrowserProvider, JsonRpcProvider, Contract, parseEther, formatEther } from "ethers";
 import RedeemForm from "./RedeemForm";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 
-
-
-
-
-
 const CONTRACT_ADDRESS = "0xa6A846f7C9d98709CE24430B59319a5A7F9ecD92";
+// === Ethereal Renaissance (ERC1155) ===
+const ER_CONTRACT_ADDRESS = "0xd184516803dEcF70F2BE8b76578758f3d4924aC6";
+
+const ER_ABI = [
+  "function mint(uint256 id, uint256 amount) payable",
+  "function tokenSupply(uint256) view returns (uint256)",
+  "function maxSupply(uint256) view returns (uint256)",
+  "function tokenPrice(uint256) view returns (uint256)",
+  "function balanceOf(address account, uint256 id) view returns (uint256)"
+];
 
 const ABI = [
   "function mint(uint256 id, uint256 amount) payable",
@@ -70,9 +76,8 @@ function MintPage({ onMint, minting, error, success, walletConnected, connectWal
         const price = await contract.tokenPrice(currentPhase.id);
         const formatted = parseFloat(formatEther(price));
         setBasePrice(formatted);
-const minted = await contract.tokenSupply(currentPhase.id);
-setMintedCount(Number(minted));
-
+        const minted = await contract.tokenSupply(currentPhase.id);
+        setMintedCount(Number(minted));
 
         const phaseStatus = await contract.phaseActive(currentPhase.id);
         setIsPhaseActive(phaseStatus);
@@ -137,34 +142,34 @@ setMintedCount(Number(minted));
           <h3 style={{ marginBottom: "1rem", fontSize: "1.4rem", color: "#0ff", textAlign: "center" }}>
             Owner Benefits
           </h3>
-        <ul style={{ lineHeight: "1.6", fontSize: "1rem", color: "#ccc", paddingLeft: "1rem", listStyleType: "none" }}>
-  <li>✅ Become part of the Tuscanium artistic vision and collector community</li>
-  <li>
-    ✅ Guaranteed{" "}
-    <span style={{ color: "lime", fontWeight: "bold" }}>
-      extra airdrops
-    </span>{" "}
-    of value that you can even insta-flip for <b>every holder</b>
-  </li>
-  <li>✅ 10% extra discount on next mint phases</li>
-  <li>
-    ✅{" "}
-    <span style={{ color: "lime", fontWeight: "bold" }}>
-      FREE CANVAS
-    </span>{" "}
-    delivered at home for Phase 1 buyers 🎁
-  </li>
-  <li>
-    ✅ <b>Premium</b> Holder role on Discord with access to private channels, early news, and special benefits
-  </li>
-  <li>
-    ✅{" "}
-    <span style={{ color: "lime", fontWeight: "bold" }}>
-      Extra rewards
-    </span>{" "}
-    and more discounts for those holding <b>all 3 phases</b>
-  </li>
-</ul>
+          <ul style={{ lineHeight: "1.6", fontSize: "1rem", color: "#ccc", paddingLeft: "1rem", listStyleType: "none" }}>
+            <li>✅ Become part of the Tuscanium artistic vision and collector community</li>
+            <li>
+              ✅ Guaranteed{" "}
+              <span style={{ color: "lime", fontWeight: "bold" }}>
+                extra airdrops
+              </span>{" "}
+              of value that you can even insta-flip for <b>every holder</b>
+            </li>
+            <li>✅ 10% extra discount on next mint phases</li>
+            <li>
+              ✅{" "}
+              <span style={{ color: "lime", fontWeight: "bold" }}>
+                FREE CANVAS
+              </span>{" "}
+              delivered at home for Phase 1 buyers 🎁
+            </li>
+            <li>
+              ✅ <b>Premium</b> Holder role on Discord with access to private channels, early news, and special benefits
+            </li>
+            <li>
+              ✅{" "}
+              <span style={{ color: "lime", fontWeight: "bold" }}>
+                Extra rewards
+              </span>{" "}
+              and more discounts for those holding <b>all 3 phases</b>
+            </li>
+          </ul>
 
         </div>
       </div>
@@ -222,55 +227,228 @@ setMintedCount(Number(minted));
           }}
         />
 
-  <button
-  onClick={() => requireConnection(walletConnected, connectWallet, () => onMint(currentPhase.id, mintAmount))}
-  disabled={minting}
+        <button
+          onClick={() => requireConnection(walletConnected, connectWallet, () => onMint(currentPhase.id, mintAmount))}
+          disabled={minting}
 
-  style={{
-    padding: "1rem 3rem",
-    fontSize: "1.2rem",
-    border: "none",
-    borderRadius: "10px",
-    backgroundColor: "#0ff",
-    color: "#000",
-    fontWeight: "bold",
-    cursor: "pointer"
-  }}
->
-  {minting ? "Minting..." : "MINT NOW"}
-</button>
+          style={{
+            padding: "1rem 3rem",
+            fontSize: "1.2rem",
+            border: "none",
+            borderRadius: "10px",
+            backgroundColor: "#0ff",
+            color: "#000",
+            fontWeight: "bold",
+            cursor: "pointer"
+          }}
+        >
+          {minting ? "Minting..." : "MINT NOW"}
+        </button>
 
-</div>
+      </div>
 
-<div style={{ marginTop: "1rem", textAlign: "center" }}>
+     <div style={{ marginTop: "1rem", textAlign: "center" }}>
   <a
     href="https://opensea.io/collection/david-s-phases-by-tuscanium"
     target="_blank"
     rel="noopener noreferrer"
     style={{
-      color: "#0ff",
-      textDecoration: "underline",
-      fontSize: "1.7rem",
-      fontWeight: "bold"
+      display: "inline-block",
+      padding: "0.75rem 1.5rem",
+      backgroundColor: "#2081E2",
+      color: "#fff",
+      borderRadius: "8px",
+      textDecoration: "none",
+      fontSize: "1.1rem",
+      fontWeight: 700
     }}
   >
     View on OpenSea
   </a>
 
-  {error && (
-    <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
-      {error}
-    </p>
-  )}
-  {success && (
-    <p style={{ color: "lightgreen", marginTop: "1rem", textAlign: "center" }}>
-      {success}
-    </p>
-  )}
-</div>
-</div>
-);
+
+        {error && (
+          <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
+            {error}
+          </p>
+        )}
+        {success && (
+          <p style={{ color: "lightgreen", marginTop: "1rem", textAlign: "center" }}>
+            {success}
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
+
+function EtherealMint({ walletConnected, connectWallet }) {
+  const ITEMS = [
+    { id: 0, label: "Perseo",     image: "/images/ethereal/0.png", max: 25,  price: 0.079 },
+    { id: 4, label: "Dante",      image: "/images/ethereal/4.png", max: 30,  price: 0.065 },
+    { id: 1, label: "Galileo",    image: "/images/ethereal/1.png", max: 40,  price: 0.04 },
+    { id: 2, label: "Cosimo",     image: "/images/ethereal/2.png", max: 50,  price: 0.032 },
+    { id: 3, label: "Colossus",   image: "/images/ethereal/3.png", max: 100, price: 0.025 },
+    { id: 5, label: "Marzocco",   image: "/images/ethereal/5.png", max: 500, price: 0.0069 },
+    { id: 6, label: "Boar",       image: "/images/ethereal/6.png", max: 500, price: 0.0069 },
+  ];
+
+  const [active, setActive] = React.useState(0);
+  const [mintAmount, setMintAmount] = React.useState(1);
+  const [minted, setMinted] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
+  const [err, setErr] = React.useState("");
+  const [ok, setOk] = React.useState("");
+
+  const current = ITEMS[active];
+
+  async function fetchMinted() {
+    try {
+      const provider = window.ethereum
+        ? new BrowserProvider(window.ethereum)
+        : new JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_KEY");
+
+      const c = new Contract(ER_CONTRACT_ADDRESS, ER_ABI, provider);
+      const s = await c.tokenSupply(current.id);
+      setMinted(Number(s));
+    } catch (e) {
+      console.error("Fetch minted error:", e);
+    }
+  }
+
+  React.useEffect(() => { fetchMinted(); /* eslint-disable-next-line */ }, [active, walletConnected]);
+
+  const totalEthStr = (current.price * mintAmount).toFixed(6);
+
+  async function doMint() {
+    if (!window.ethereum) {
+      setErr("Please install MetaMask to mint");
+      return;
+    }
+    setLoading(true);
+    setErr("");
+    setOk("");
+
+    try {
+      const provider = new BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const c = new Contract(ER_CONTRACT_ADDRESS, ER_ABI, signer);
+
+      const tx = await c.mint(current.id, mintAmount, { value: parseEther(totalEthStr) });
+      await tx.wait();
+      setOk("Mint successful! 🎉");
+      fetchMinted();
+      setTimeout(() => setOk(""), 2500);
+    } catch (e) {
+      setErr("Mint failed: " + (e?.info?.error?.message || e.message));
+    }
+    setLoading(false);
+  }
+
+  function requireConnection(action) {
+    if (!walletConnected) connectWallet();
+    else action();
+  }
+
+  return (
+    <div style={{ padding: "2rem", maxWidth: 1000, margin: "0 auto", color: "#fff" }}>
+      <h1 style={{ fontSize: "2.2rem", textAlign: "center", marginBottom: "1rem" }}>
+        Ethereal Renaissance’s Mint
+      </h1>
+
+      {/* thumbnails scroll */}
+      <div style={{ display: "flex", gap: "0.75rem", overflowX: "auto", padding: "0.5rem 0", marginBottom: "1rem" }}>
+        {ITEMS.map((it, i) => (
+          <button
+            key={it.id}
+            onClick={() => setActive(i)}
+            style={{
+              minWidth: 92, border: "1px solid #333", background: i===active ? "#0ff" : "#111",
+              color: i===active ? "#000" : "#fff", borderRadius: 8, padding: 6, cursor: "pointer"
+            }}
+          >
+            <img src={it.image} alt={it.label} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 6 }} />
+            <div style={{ fontSize: 12, fontWeight: 600, marginTop: 4 }}>{it.label}</div>
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem" }}>
+        <div style={{ width: 420, background: "#111", padding: "1rem", borderRadius: 12, border: "1px solid #333" }}>
+          <img src={current.image} alt={current.label} style={{ width: "100%", borderRadius: 8 }} />
+          <p style={{ textAlign: "center", color: "#ccc", marginTop: 8 }}>
+            {minted} / {current.max} already minted
+          </p>
+        </div>
+
+        <div style={{ width: 420, background: "#111", padding: "1rem", borderRadius: 12, border: "1px solid #333" }}>
+          <h3 style={{ textAlign: "center", color: "#0ff", marginBottom: 12 }}>{current.label}</h3>
+          <p style={{ textAlign: "center", margin: 0 }}>
+            Base price: <b>{current.price.toFixed(4)} ETH</b>
+          </p>
+
+          <div style={{ marginTop: "2rem", textAlign: "center" }}>
+            <p style={{ fontSize: "1.05rem", maxWidth: "680px", margin: "0 auto 1rem auto", lineHeight: 1.6, color: "#ddd" }}>
+              <b>Ethereal Renaissance</b> is a limited NFT collection blending Italy’s timeless art heritage
+              with visionary digital design. Each piece reimagines a cultural icon with fine detail and
+              blockchain-certified authenticity.
+            </p>
+
+            <a
+              href="https://opensea.io/collection/ethereal-renaissance"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "0.75rem 1.5rem",
+                backgroundColor: "#2081E2",
+                color: "#fff",
+                borderRadius: "8px",
+                textDecoration: "none",
+                fontSize: "1.1rem",
+                fontWeight: 700
+              }}
+            >
+              View on OpenSea
+            </a>
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: 12 }}>
+            <label htmlFor="qty_er" style={{ marginRight: 10 }}>Quantity:</label>
+            <input
+              id="qty_er" type="number" min={1} max={10}
+              value={mintAmount}
+              onChange={(e)=> setMintAmount(Math.min(10, Math.max(1, Number(e.target.value))))}
+              disabled={loading}
+              style={{ width: 70, textAlign: "center", background:"#111", color:"#fff", border:"1px solid #444", borderRadius:6, padding:6 }}
+            />
+          </div>
+
+          <p style={{ textAlign: "center", marginTop: 10 }}>
+            Total: <b>{walletConnected ? `${totalEthStr} ETH` : "Connect wallet to see total"}</b>
+          </p>
+
+          <div style={{ textAlign: "center", marginTop: 12 }}>
+            <button
+              onClick={() => requireConnection(doMint)}
+              disabled={loading}
+              style={{
+                padding: "0.9rem 2rem", fontSize: "1.1rem", borderRadius: 10, border: "none",
+                background: "#0ff", color: "#000", fontWeight: 700, cursor: "pointer"
+              }}
+            >
+              {loading ? "Minting..." : "MINT NOW"}
+            </button>
+          </div>
+
+          {err && <p style={{ color: "red", textAlign: "center", marginTop: 10 }}>{err}</p>}
+          {ok &&  <p style={{ color: "lightgreen", textAlign: "center", marginTop: 10 }}>{ok}</p>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 function AboutUs() {
   return (
@@ -286,7 +464,7 @@ function AboutUs() {
         lineHeight: "1.8",
       }}
     >
-<h1 style={{ marginBottom: "1.5rem", textAlign: "center" }}>About Tuscanium</h1>
+      <h1 style={{ marginBottom: "1.5rem", textAlign: "center" }}>About Tuscanium</h1>
 
       {/* Intro testo pieno */}
       <p style={{ marginBottom: "1.5rem" }}>
@@ -327,31 +505,82 @@ function AboutUs() {
       </p>
 
       <img
-  src="/images/products.png"
-  alt="Tuscanium Products"
-  style={{
-    width: "100%",
-    maxWidth: "500px",
-    display: "block",
-    margin: "2rem auto",
-    borderRadius: "12px",
-    boxShadow: "0 0 15px #0ff8",
-  }}
-/>
+        src="/images/products.png"
+        alt="Tuscanium Products"
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          display: "block",
+          margin: "2rem auto",
+          borderRadius: "12px",
+          boxShadow: "0 0 15px #0ff8",
+        }}
+      />
 
-<p style={{ marginBottom: "1.5rem" }}>
-  Together, we are shaping a journey that connects past and future, local culture and global perspectives — and positions Tuscanium as a powerful reference point in the evolving world of art, crypto, and beyond.
-</p>
-
+      <p style={{ marginBottom: "1.5rem" }}>
+        Together, we are shaping a journey that connects past and future, local culture and global perspectives — and positions Tuscanium as a powerful reference point in the evolving world of art, crypto, and beyond.
+      </p>
 
       <p style={{ marginTop: "2rem", fontWeight: "600", fontSize: "1.3rem" }}>
         Welcome to Tuscanium. Welcome to your transformation.
       </p>
+
+      {/* --- Canvas Shop section --- */}
+      <div
+        style={{
+          marginTop: "2.5rem",
+          padding: "1.25rem",
+          background: "#0a0a0a",
+          border: "1px solid #1f1f1f",
+          borderRadius: "12px",
+          boxShadow: "0 0 10px rgba(0,255,255,0.12)",
+          textAlign: "center",
+        }}
+      >
+        <h2 style={{ margin: "0 0 0.75rem 0", color: "#0ff", fontSize: "1.5rem" }}>
+          Tuscanium Canvas Shop
+        </h2>
+        <p style={{ margin: "0 0 1rem 0", color: "#ddd" }}>
+          We also offer exclusive <b>canvas prints</b> inspired by our collections. Explore the shop and bring the artwork to your walls.
+        </p>
+
+        {/* Placeholder da sostituire quando carichi l'immagine */}
+        <img
+          src="/images/tela.png"
+          alt="Tuscanium Canvas Shop"
+          style={{
+            width: "100%",
+            maxWidth: "520px",
+            display: "block",
+            margin: "0 auto 1rem auto",
+            borderRadius: "12px",
+            boxShadow: "0 0 12px rgba(0,255,255,0.18)",
+            objectFit: "cover",
+          }}
+        />
+
+        <a
+          href="https://tuscanium.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#2081E2",
+            color: "#fff",
+            borderRadius: "8px",
+            textDecoration: "none",
+            fontSize: "1.1rem",
+            fontWeight: 700,
+            marginTop: "0.25rem",
+          }}
+        >
+          Visit tuscanium.org
+        </a>
+      </div>
     </div>
   );
 }
-
-
 
 function Roadmap() {
   return (
@@ -388,33 +617,33 @@ function Roadmap() {
             image: "/images/1.png",
           },
           {
-            title: "Phase 2 - September 3, 2025",
+            title: "Ethereal Renaissance - August 2025",
+            text: "Launch of the second Tuscanium collection",
+            image: "/images/ethereal/0.png", // Perseo
+          },
+          {
+            title: "Phase 2 - October 3, 2025",
             text: "Phase 2",
             image: "/images/2.png",
           },
           {
-            title: "Second Collection - October/November 2025",
-            text: "Launch of the second Tuscanium collection",
-            image:  "/images/drappo.png", 
-          },
-          {
-            title: " Entry into the International Art scene - 2026",
+            title: "Entry into the International Art scene - 2026",
             text: "Debut into the international art world as a recognized force with an artistic value",
-            image: "/images/davidmuseo.png", 
+            image: "/images/davidmuseo.png",
           },
           {
-            title: "Tuscanium Coin- 2026",
+            title: "Tuscanium Coin - 2026",
             text: "Launch of the Tuscanium coin",
             image: "/images/coin.png",
           },
           {
             title: "Physical Products - 2026",
-            text: "Launch of exclusive physical Tuscanium products",
+            text: "Launch of more exclusive physical Tuscanium products",
             image: "/images/products.png",
           },
-           {
-            title: "News for project Supporters- 2026",
-            text: "News beneftis and rewards for holders",
+          {
+            title: "News for project Supporters - 2026",
+            text: "News benefits and rewards for holders",
             image: "/images/holders.png",
           },
         ].map((item, idx) => (
@@ -465,100 +694,151 @@ function Roadmap() {
   );
 }
 
+
 // === Our Collections component ===
 function OurCollections() {
-return (
-  <div
-    style={{
-      animation: "fadeIn 0.8s ease-in-out",
-      padding: "3rem 2rem",
-      maxWidth: 900,
-      margin: "0 auto",
-      color: "#fff",
-      fontFamily: "'Poppins', sans-serif",
-      fontSize: "1.15rem",
-      lineHeight: "1.8",
-      textAlign: "center",
-    }}
-  >
-    <h1 style={{ marginBottom: "1.5rem" }}>David's Phases</h1>
-    <img
-      src="/images/1.png"
-      alt="Our Collection"
-      style={{
-        width: "400px",
-        maxWidth: "90vw",
-        borderRadius: "12px",
-        marginBottom: "1rem",
-      }}
-    />
-    <p style={{ marginBottom: "2rem" }}>
-      Inspired by Michelangelo’s David, each NFT in this collection ignites the
-      marble skin in vibrant flames, capturing a metamorphic journey of courage
-      and rebirth. Watch as David’s phases transform, his surface glowing with
-      the power to overcome giants and emerge anew.
-   <p>
-  Additionally, by purchasing Phase 1, you will receive a{" "}
-  <span style={{ color: "lime", fontWeight: "bold" }}>
-    free canvas
-  </span>{" "}
-  shipped directly to your home at no cost.
-</p>
-
-    </p>
-
-    {/* Prima e Dopo */}
+  return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "1rem",
-        flexWrap: "wrap",
-        marginBottom: "2rem",
+        animation: "fadeIn 0.8s ease-in-out",
+        padding: "3rem 2rem",
+        maxWidth: 900,
+        margin: "0 auto",
+        color: "#fff",
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: "1.15rem",
+        lineHeight: "1.8",
+        textAlign: "center",
       }}
     >
+      {/* === DAVID'S PHASES === */}
+      <h1 style={{ marginBottom: "1.5rem" }}>David's Phases</h1>
       <img
-        src="/images/davidoriginale.png"
-        alt="David Before"
+        src="/images/1.png"
+        alt="Our Collection"
         style={{
-          width: "180px",
-          borderRadius: "10px",
-          objectFit: "cover",
+          width: "400px",
+          maxWidth: "90vw",
+          borderRadius: "12px",
+          marginBottom: "1rem",
         }}
       />
-      <span style={{ fontSize: "2rem", color: "#0ff" }}>➡️</span>
-      <img
-        src="/images/2.png"
-        alt="David After"
+      <p style={{ marginBottom: "2rem" }}>
+        Inspired by Michelangelo’s David, each NFT in this collection ignites the
+        marble skin in vibrant flames, capturing a metamorphic journey of courage
+        and rebirth. Watch as David’s phases transform, his surface glowing with
+        the power to overcome giants and emerge anew.
+        <p>
+          Additionally, by purchasing Phase 1, you will receive a{" "}
+          <span style={{ color: "lime", fontWeight: "bold" }}>
+            free canvas
+          </span>{" "}
+          shipped directly to your home at no cost.
+        </p>
+      </p>
+
+      {/* Prima e Dopo */}
+      <div
         style={{
-          width: "180px",
-          borderRadius: "10px",
-          objectFit: "cover",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "1rem",
+          flexWrap: "wrap",
+          marginBottom: "2rem",
+        }}
+      >
+        <img
+          src="/images/davidoriginale.png"
+          alt="David Before"
+          style={{
+            width: "180px",
+            borderRadius: "10px",
+            objectFit: "cover",
+          }}
+        />
+        <span style={{ fontSize: "2rem", color: "#0ff" }}>➡️</span>
+        <img
+          src="/images/2.png"
+          alt="David After"
+          style={{
+            width: "180px",
+            borderRadius: "10px",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      {/* Bottone David */}
+      <a
+  href="https://opensea.io/collection/david-s-phases-by-tuscanium"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{
+    display: "inline-block",
+    padding: "0.75rem 1.5rem",
+    backgroundColor: "#2081E2",
+    color: "#fff",
+    borderRadius: "8px",
+    textDecoration: "none",
+    fontSize: "1.1rem",
+    fontWeight: 700
+  }}
+>
+  View on OpenSea
+</a>
+
+
+      {/* Divider luminoso */}
+      <div
+        style={{
+          height: "2px",
+          width: "80%",
+          margin: "3rem auto",
+          background:
+            "linear-gradient(90deg, rgba(0,0,0,0), #00ffff, rgba(0,0,0,0))",
+          boxShadow: "0 0 12px #00ffff55",
         }}
       />
+
+      {/* === ETHEREAL RENAISSANCE === */}
+      <h1 style={{ margin: "0 0 1.5rem 0" }}>Ethereal Renaissance</h1>
+      <img
+        src="/images/ethereal/0.png"
+        alt="Ethereal Renaissance - Perseo"
+        style={{
+          width: "400px",
+          maxWidth: "90vw",
+          borderRadius: "12px",
+          marginBottom: "1rem",
+        }}
+      />
+      <p style={{ marginBottom: "2rem" }}>
+        <b>Ethereal Renaissance</b> is a limited NFT collection blending Italy’s timeless
+        art heritage with visionary digital design. Each piece reimagines a cultural icon
+        with fine detail and blockchain-certified authenticity.
+      </p>
+      <a
+        href="https://opensea.io/collection/ethereal-renaissance"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "inline-block",
+          padding: "0.75rem 1.5rem",
+          backgroundColor: "#2081E2",
+          color: "#fff",
+          borderRadius: "8px",
+          textDecoration: "none",
+          fontSize: "1.1rem",
+          fontWeight: 700,
+        }}
+      >
+        View on OpenSea
+      </a>
     </div>
-
-    {/* Link in fondo */}
-    <a
-      href="https://opensea.io/collection/david-s-phases-by-tuscanium"
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        color: "#0ff",
-        textDecoration: "underline",
-        fontWeight: "bold",
-        fontSize: "1.7rem",
-        display: "inline-block",
-        marginTop: "1rem",
-      }}
-    >
-      View on OpenSea
-    </a>
-  </div>
-);
-
+  );
 }
+
 
 function HowToBuy() {
   const steps = [
@@ -607,9 +887,8 @@ function RedeemCanvas({
   purchaseTxHash,
   walletAddress,
   buyCanvas,
-  connectWallet  // 👈 aggiunto
-})
- {
+  connectWallet // 👈 aggiunto
+}) {
   return (
     <div
       style={{
@@ -632,16 +911,8 @@ function RedeemCanvas({
           color: "#ccc",
         }}
       >
-<p
-  style={{
-    textAlign: "center",
-    fontSize: "1.1rem",
-    marginBottom: "2rem",
-    color: "#ccc",
-  }}
->
-  By minting <b>Phase 1</b>, you will receive a voucher NFT which, once <b>burned</b>, lets you claim your exclusive canvas painting completely <b style={{ color: "lime" }}>free of charge</b>. Alternatively, you can purchase the canvas directly.
-</p>
+        By minting <b>Phase 1</b>, you will receive a voucher NFT which, once <b>burned</b>, lets you claim your exclusive canvas painting completely{" "}
+        <b style={{ color: "lime" }}>free of charge</b>. Alternatively, you can purchase the canvas directly.
       </p>
 
       <div
@@ -688,24 +959,22 @@ function RedeemCanvas({
       <div style={{ textAlign: "center" }}>
         {/* Button Burn */}
         <button
-  onClick={() => requireConnection(walletConnected, connectWallet, burnVoucher)}
-  disabled={burning}
-
-  style={{
-    padding: "1rem 2rem",
-    fontSize: "1.2rem",
-    border: "none",
-    borderRadius: "8px",
-    backgroundColor: burning ? "#888" : "#0ff",
-    color: "#000",
-    fontWeight: "bold",
-    cursor: burning ? "not-allowed" : "pointer",
-    transition: "background 0.3s ease",
-  }}
->
-  {burning ? "Burning..." : "🔥 Burn Voucher"}
-</button>
-
+          onClick={() => requireConnection(walletConnected, connectWallet, burnVoucher)}
+          disabled={burning}
+          style={{
+            padding: "1rem 2rem",
+            fontSize: "1.2rem",
+            border: "none",
+            borderRadius: "8px",
+            backgroundColor: burning ? "#888" : "#0ff",
+            color: "#000",
+            fontWeight: "bold",
+            cursor: burning ? "not-allowed" : "pointer",
+            transition: "background 0.3s ease",
+          }}
+        >
+          {burning ? "Burning..." : "🔥 Burn Voucher"}
+        </button>
 
         <p style={{ margin: "1rem 0", fontSize: "1.2rem", fontWeight: "bold", color: "#999" }}>
           OR
@@ -714,65 +983,93 @@ function RedeemCanvas({
         {/* Button Buy */}
         <div style={{ marginBottom: "1rem" }}>
           <button
-  onClick={() => requireConnection(walletConnected, connectWallet, buyCanvas)}
-  disabled={burning}
-
-  style={{
-    padding: "1rem 2rem",
-    fontSize: "1.2rem",
-    border: "none",
-    borderRadius: "8px",
-    backgroundColor: burning ? "#888" : "#ff9900",
-    color: "#000",
-    fontWeight: "bold",
-    cursor: burning ? "not-allowed" : "pointer",
-    transition: "background 0.3s ease",
-  }}
->
-  {burning ? "Processing..." : "💰 Buy Now - 0.049 ETH"}
-</button>
-
+            onClick={() => requireConnection(walletConnected, connectWallet, buyCanvas)}
+            disabled={burning}
+            style={{
+              padding: "1rem 2rem",
+              fontSize: "1.2rem",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: burning ? "#888" : "#ff9900",
+              color: "#000",
+              fontWeight: "bold",
+              cursor: burning ? "not-allowed" : "pointer",
+              transition: "background 0.3s ease",
+            }}
+          >
+            {burning ? "Processing..." : "💰 Buy Now - 0.049 ETH"}
+          </button>
         </div>
 
-      <p
-  style={{
-    marginTop: "0.5rem",
-    fontSize: "0.95rem",
-    color: "lime",
-    fontWeight: "bold",
-  }}
->
-  The form for address and details will appear after the transaction is confirmed.
-</p>
+        <p
+          style={{
+            marginTop: "0.5rem",
+            fontSize: "0.95rem",
+            color: "lime",
+            fontWeight: "bold",
+          }}
+        >
+          The form for address and details will appear after the transaction is confirmed.
+        </p>
 
-<div style={{ marginTop: "2rem", textAlign: "center" }}>
-  <img
-    src="/images/tela.png"
-    alt="Your Exclusive Canvas"
-    style={{
-      width: "400px",
-      maxWidth: "90vw",
-      borderRadius: "12px",
-      boxShadow: "0 0 15px rgba(0,255,255,0.4)",
-    }}
-  />
-</div>
-
+        <div style={{ marginTop: "2rem", textAlign: "center" }}>
+          <img
+            src="/images/tela.png"
+            alt="Your Exclusive Canvas"
+            style={{
+              width: "400px",
+              maxWidth: "90vw",
+              borderRadius: "12px",
+              boxShadow: "0 0 15px rgba(0,255,255,0.4)",
+            }}
+          />
+        </div>
 
         {/* Show RedeemForm if one of the two transactions is confirmed */}
         {(walletAddress && (burnTxHash || purchaseTxHash)) && (
-          <RedeemForm
-            burnTxHash={burnTxHash || purchaseTxHash}
-            walletAddress={walletAddress}
-          />
+          <RedeemForm burnTxHash={burnTxHash || purchaseTxHash} walletAddress={walletAddress} />
         )}
 
-        {burnError && (
-          <p style={{ color: "red", marginTop: "1rem" }}>{burnError}</p>
-        )}
-        {burnSuccess && (
-          <p style={{ color: "lightgreen", marginTop: "1rem" }}>{burnSuccess}</p>
-        )}
+        {burnError && <p style={{ color: "red", marginTop: "1rem" }}>{burnError}</p>}
+        {burnSuccess && <p style={{ color: "lightgreen", marginTop: "1rem" }}>{burnSuccess}</p>}
+      </div>
+
+      {/* --- Direct Shop Link --- */}
+      <div
+        style={{
+          marginTop: "3rem",
+          padding: "1.5rem",
+          background: "#0a0a0a",
+          border: "1px solid #1f1f1f",
+          borderRadius: "12px",
+          boxShadow: "0 0 10px rgba(0,255,255,0.12)",
+          textAlign: "center",
+        }}
+      >
+        <h2 style={{ margin: "0 0 0.75rem 0", color: "#0ff", fontSize: "1.4rem" }}>
+          Prefer to shop directly?
+        </h2>
+        <p style={{ margin: "0 0 1rem 0", color: "#ddd" }}>
+          You can also browse and purchase our exclusive canvases directly from our official shop.
+        </p>
+
+        <a
+          href="https://tuscanium.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-block",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#2081E2",
+            color: "#fff",
+            borderRadius: "8px",
+            textDecoration: "none",
+            fontSize: "1.1rem",
+            fontWeight: 700,
+          }}
+        >
+          Visit tuscanium.org
+        </a>
       </div>
     </div>
   );
@@ -822,20 +1119,19 @@ function Products() {
           boxShadow: "0 0 15px rgba(0,255,255,0.3)",
         }}
       />
-{/* Price */}
-<p style={{ fontSize: "1.4rem", marginBottom: "1rem" }}>
-  <span
-    style={{
-      textDecoration: "line-through",
-      color: "#888",
-      marginRight: "0.5rem",
-    }}
-  >
-    €199
-  </span>
-  <b style={{ color: "lime" }}>Now €99</b>
-</p>
-
+      {/* Price */}
+      <p style={{ fontSize: "1.4rem", marginBottom: "1rem" }}>
+        <span
+          style={{
+            textDecoration: "line-through",
+            color: "#888",
+            marginRight: "0.5rem",
+          }}
+        >
+          €199
+        </span>
+        <b style={{ color: "lime" }}>Now €99</b>
+      </p>
 
       {/* CTA */}
       <button
@@ -919,7 +1215,6 @@ function Products() {
   );
 }
 
-
 export default function App() {
   const [minting, setMinting] = useState(false);
   const [error, setError] = useState("");
@@ -927,177 +1222,170 @@ export default function App() {
   const [page, setPage] = useState("mint");
   const [walletConnected, setWalletConnected] = useState(false);
   const [burning, setBurning] = useState(false);
-const [burnError, setBurnError] = useState("");
-const [burnSuccess, setBurnSuccess] = useState("");
-const [walletAddress, setWalletAddress] = useState(null);
-const [burnTxHash, setBurnTxHash] = useState(null);
-const [purchaseTxHash, setPurchaseTxHash] = useState(null);
-const [menuOpen, setMenuOpen] = useState(false);
-const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [burnError, setBurnError] = useState("");
+  const [burnSuccess, setBurnSuccess] = useState("");
+  const [walletAddress, setWalletAddress] = useState(null);
+  const [burnTxHash, setBurnTxHash] = useState(null);
+  const [purchaseTxHash, setPurchaseTxHash] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-   
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-useEffect(() => {
-  const handleResize = () => setIsMobile(window.innerWidth <= 768);
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+  useEffect(() => {
+    if (!isMobile) return; // Non fare nulla su desktop
 
-useEffect(() => {
-  if (!isMobile) return; // Non fare nulla su desktop
+    function handleScroll() {
+      const footer = document.querySelector("footer");
+      const button = document.querySelector('a[href*="metamask"]');
+      if (!footer || !button) return;
 
-  function handleScroll() {
-    const footer = document.querySelector("footer");
-    const button = document.querySelector('a[href*="metamask"]');
-    if (!footer || !button) return;
+      const footerRect = footer.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
 
-    const footerRect = footer.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-
-    if (footerRect.top < windowHeight) {
-      // Se il footer è visibile nella viewport, solleva il bottone
-      const overlap = windowHeight - footerRect.top + 16; // 16px margine
-      button.style.bottom = `${overlap}px`;
-    } else {
-      // Se il footer non è visibile, resta in basso
-      button.style.bottom = "1rem";
+      if (footerRect.top < windowHeight) {
+        // Se il footer è visibile nella viewport, solleva il bottone
+        const overlap = windowHeight - footerRect.top + 16; // 16px margine
+        button.style.bottom = `${overlap}px`;
+      } else {
+        // Se il footer non è visibile, resta in basso
+        button.style.bottom = "1rem";
+      }
     }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
+  async function burnVoucher() {
+    if (!window.ethereum) {
+      setBurnError("Please install MetaMask to burn your voucher.");
+      return;
+    }
+    setBurning(true);
+    setBurnError("");
+    setBurnSuccess("");
+
+    try {
+      const provider = new BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new Contract(CONTRACT_ADDRESS, ABI, signer);
+      const userAddress = await signer.getAddress();
+
+      // Qui tx è la transazione inviata
+      const tx = await contract.burn(userAddress, 6, 1);
+
+      console.log("Sent tx:", tx);
+
+      // tx.hash è l'hash immediato
+      setWalletAddress(userAddress);
+      setBurnTxHash(tx.hash);
+      console.log("burnTxHash:", tx.hash);
+      console.log("walletAddress:", userAddress);
+
+      setBurnSuccess("Voucher burned successfully! 🎉 You can now fill in the shipping form.");
+    } catch (err) {
+      setBurnError("Burn failed: " + (err?.info?.error?.message || err.message));
+    }
+    setBurning(false);
   }
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [isMobile]);
+  async function buyCanvas() {
+    if (!window.ethereum) {
+      setBurnError("Please install MetaMask to buy your canvas.");
+      return;
+    }
 
+    setBurning(true);
+    setBurnError("");
+    setBurnSuccess("");
 
+    try {
+      const provider = new BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
 
-async function burnVoucher() {
-  if (!window.ethereum) {
-    setBurnError("Please install MetaMask to burn your voucher.");
-    return;
+      const tx = await signer.sendTransaction({
+        to: "0xe025f9cd90b99b3590c185cbf1ae5e1444148240", // Indirizzo destinatario ETH
+        value: parseEther("0.049")
+      });
+
+      console.log("Buy tx:", tx);
+
+      setWalletAddress(await signer.getAddress());
+      setPurchaseTxHash(tx.hash);
+
+      setBurnSuccess("Payment successful! 🎉 You can now fill in the shipping form.");
+    } catch (err) {
+      setBurnError("Payment failed: " + (err?.info?.error?.message || err.message));
+    }
+
+    setBurning(false);
   }
-  setBurning(true);
-  setBurnError("");
-  setBurnSuccess("");
-
-  try {
-    const provider = new BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contract = new Contract(CONTRACT_ADDRESS, ABI, signer);
-    const userAddress = await signer.getAddress();
-
-    // Qui tx è la transazione inviata
-    const tx = await contract.burn(userAddress, 6, 1);
-
-    console.log("Sent tx:", tx);
-
-    // tx.hash è l'hash immediato
-    setWalletAddress(userAddress);
-    setBurnTxHash(tx.hash);
-    console.log("burnTxHash:", tx.hash);
-    console.log("walletAddress:", userAddress);
-
-    setBurnSuccess("Voucher burned successfully! 🎉 You can now fill in the shipping form.");
-  } catch (err) {
-    setBurnError("Burn failed: " + (err?.info?.error?.message || err.message));
-  }
-  setBurning(false);
-}
-
-async function buyCanvas() {
-  if (!window.ethereum) {
-    setBurnError("Please install MetaMask to buy your canvas.");
-    return;
-  }
-
-  setBurning(true);
-  setBurnError("");
-  setBurnSuccess("");
-
-  try {
-    const provider = new BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-
-    const tx = await signer.sendTransaction({
-      to: "0xe025f9cd90b99b3590c185cbf1ae5e1444148240", // Indirizzo destinatario ETH
-      value: parseEther("0.049")
-    });
-
-    console.log("Buy tx:", tx);
-
-    setWalletAddress(await signer.getAddress());
-    setPurchaseTxHash(tx.hash);
-
-    setBurnSuccess("Payment successful! 🎉 You can now fill in the shipping form.");
-  } catch (err) {
-    setBurnError("Payment failed: " + (err?.info?.error?.message || err.message));
-  }
-
-  setBurning(false);
-}
-
-
 
   async function connectWallet() {
-  if (!window.ethereum) {
-    setError("MetaMask is not installed");
-    return;
-  }
-  try {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    setWalletConnected(true);
-  } catch (err) {
-    setError("Wallet connection failed: " + err.message);
-  }
-}
-
-async function mint(id, amount) {
-  if (!window.ethereum) {
-    setError("Please install MetaMask to mint");
-    return;
+    if (!window.ethereum) {
+      setError("MetaMask is not installed");
+      return;
+    }
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      setWalletConnected(true);
+    } catch (err) {
+      setError("Wallet connection failed: " + err.message);
+    }
   }
 
-  setMinting(true);
-  try {
-    const provider = new BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contract = new Contract(CONTRACT_ADDRESS, ABI, signer);
-
-    // Ottieni il balance per vedere se ha diritto allo sconto
-    let hasDiscount = false;
-    if (id > 0) {
-      const prevBalance = await contract.balanceOf(await signer.getAddress(), id - 1);
-      hasDiscount = prevBalance > 0;
+  async function mint(id, amount) {
+    if (!window.ethereum) {
+      setError("Please install MetaMask to mint");
+      return;
     }
 
-  const rawPrice = await contract.tokenPrice(id);
-const basePrice = Number(rawPrice) / 1e18;
-const finalPrice = hasDiscount ? basePrice * 0.9 : basePrice;
-const totalPrice = finalPrice * amount;
+    setMinting(true);
+    try {
+      const provider = new BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new Contract(CONTRACT_ADDRESS, ABI, signer);
 
-const tx = await contract.mint(id, amount, {
-  value: parseEther(totalPrice.toFixed(6)) // ✅ ora hai max 6 decimali
-});
+      // Ottieni il balance per vedere se ha diritto allo sconto
+      let hasDiscount = false;
+      if (id > 0) {
+        const prevBalance = await contract.balanceOf(await signer.getAddress(), id - 1);
+        hasDiscount = prevBalance > 0;
+      }
 
+      const rawPrice = await contract.tokenPrice(id);
+      const basePrice = Number(rawPrice) / 1e18;
+      const finalPrice = hasDiscount ? basePrice * 0.9 : basePrice;
+      const totalPrice = finalPrice * amount;
 
-    await tx.wait();
-    setSuccess("Mint successful! 🎉");
-    setTimeout(() => setSuccess(""), 3000);
-  } catch (err) {
-    setError("Mint failed: " + (err?.info?.error?.message || err.message));
+      const tx = await contract.mint(id, amount, {
+        value: parseEther(totalPrice.toFixed(6)) // ✅ ora hai max 6 decimali
+      });
+
+      await tx.wait();
+      setSuccess("Mint successful! 🎉");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError("Mint failed: " + (err?.info?.error?.message || err.message));
+    }
+    setMinting(false);
   }
-  setMinting(false);
-}
 
   return (
     <>
       <style>{keyframes}</style>
-<style>{`
+      <style>{`
   nav button {
     font-family: 'Poppins', sans-serif;
   }
 `}</style>
 
-<style>{`
+      <style>{`
   @media (max-width: 768px) {
     main h1 {
       margin-top: 3rem !important;
@@ -1106,8 +1394,7 @@ const tx = await contract.mint(id, amount, {
   }
 `}</style>
 
-
-<style>{`
+      <style>{`
   @media (max-width: 768px) {
     main h1 {
       margin-top: 3rem !important;
@@ -1115,8 +1402,7 @@ const tx = await contract.mint(id, amount, {
   }
 `}</style>
 
-
-<style>{`
+      <style>{`
   @media (max-width: 768px) {
     img[alt="Logo"] {
       width: 50px !important;
@@ -1126,7 +1412,7 @@ const tx = await contract.mint(id, amount, {
   }
 `}</style>
 
-<style>{`
+      <style>{`
   @media (max-width: 768px) {
     body, div, p, h1, h2, h3, li {
       font-size: 0.95rem !important;
@@ -1141,7 +1427,7 @@ const tx = await contract.mint(id, amount, {
     }
   }
 `}</style>
-<style>{`
+      <style>{`
   @media (max-width: 768px) {
     /* Allarga la seconda card (Owner Benefits) a tutta larghezza */
     div[style*="display: flex"][style*="flex-wrap"][style*="justify-content"] > div:nth-child(2) {
@@ -1149,7 +1435,6 @@ const tx = await contract.mint(id, amount, {
     }
   }
 `}</style>
-
 
       <div
         style={{
@@ -1177,368 +1462,389 @@ const tx = await contract.mint(id, amount, {
           }}
         />
 
+        {!walletConnected && (
+          <>
+            {/* MOBILE: Open in MetaMask */}
+            {isMobile && !walletConnected && !window.ethereum && !menuOpen && (
+              <a
+                href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  position: "fixed",
+                  bottom: "1rem",
+                  right: "1rem",
+                  padding: "0.8rem 1.4rem",
+                  backgroundColor: "#ffa500",
+                  border: "none",
+                  borderRadius: "8px",
+                  color: "#000",
+                  fontWeight: "bold",
+                  fontSize: "0.95rem",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+                  zIndex: 999,
+                  maxWidth: "220px",
+                  lineHeight: "1.4",
+                }}
+              >
+                🦊 Open in MetaMask
+                <br />
+                <span style={{ fontSize: "0.8rem", fontWeight: "normal" }}>
+                  (Or open MetaMask app, tap Browser and search tuscanium.vercel.app)
+                </span>
+              </a>
 
-{!walletConnected && (
-  <>
-    {/* MOBILE: Open in MetaMask */}
-    {isMobile && !walletConnected && !window.ethereum && !menuOpen && (
-   <a
-  href="https://metamask.app.link/dapp/tuscanium.vercel.app/"
-  target="_blank"
-  rel="noopener noreferrer"
-  style={{
-    position: "fixed",
-    bottom: "1rem",
-    right: "1rem",
-    padding: "0.8rem 1.4rem",
-    backgroundColor: "#ffa500",
-    border: "none",
-    borderRadius: "8px",
-    color: "#000",
-    fontWeight: "bold",
-    fontSize: "0.95rem",
-    textDecoration: "none",
-    textAlign: "center",
-    boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-    zIndex: 999,
-    maxWidth: "220px",
-    lineHeight: "1.4",
-  }}
->
-  🦊 Open in MetaMask
-  <br />
-  <span style={{ fontSize: "0.8rem", fontWeight: "normal" }}>
-    (Or open MetaMask app, tap Browser and search tuscanium.vercel.app)
-  </span>
-</a>
+            )}
 
-    )}
+            {/* MOBILE: Connect Wallet */}
+            {isMobile && !walletConnected && !!window.ethereum && (
+              <button
+                onClick={connectWallet}
+                style={{
+                  position: "fixed",
+                  bottom: "1rem",
+                  right: "1rem",
+                  padding: "0.8rem 1.4rem",
+                  backgroundColor: "#ffa500",
+                  border: "none",
+                  borderRadius: "8px",
+                  color: "#000",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  zIndex: 999,
+                  boxShadow: "0 0 10px rgba(0,0,0,0.3)"
+                }}
+              >
+                Connect Wallet
+              </button>
+            )}
 
-    {/* MOBILE: Connect Wallet */}
-    {isMobile && !walletConnected && !!window.ethereum && (
-      <button
-        onClick={connectWallet}
-        style={{
-          position: "fixed",
-          bottom: "1rem",
-          right: "1rem",
-          padding: "0.8rem 1.4rem",
-          backgroundColor: "#ffa500",
-          border: "none",
-          borderRadius: "8px",
-          color: "#000",
-          fontWeight: "bold",
-          fontSize: "1rem",
-          cursor: "pointer",
-          zIndex: 999,
-          boxShadow: "0 0 10px rgba(0,0,0,0.3)"
-        }}
-      >
-        Connect Wallet
-      </button>
-    )}
+            {/* DESKTOP: Connect Wallet */}
+            {!isMobile && (
+              <button
+                onClick={connectWallet}
+                style={{
+                  position: "absolute",
+                  top: "100px",
+                  right: "1rem",
+                  padding: "0.8rem 1.4rem",
+                  backgroundColor: "#ffa500",
+                  border: "none",
+                  borderRadius: "8px",
+                  color: "#000",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  zIndex: 999,
+                  boxShadow: "0 0 10px rgba(0,0,0,0.3)"
+                }}
+              >
+                Connect Wallet
+              </button>
+            )}
+          </>
+        )}
 
-    {/* DESKTOP: Connect Wallet */}
-    {!isMobile && (
-      <button
-        onClick={connectWallet}
-        style={{
-          position: "absolute",
-          top: "100px",
-          right: "1rem",
-          padding: "0.8rem 1.4rem",
-          backgroundColor: "#ffa500",
-          border: "none",
-          borderRadius: "8px",
-          color: "#000",
-          fontWeight: "bold",
-          fontSize: "1rem",
-          cursor: "pointer",
-          zIndex: 999,
-          boxShadow: "0 0 10px rgba(0,0,0,0.3)"
-        }}
-      >
-        Connect Wallet
-      </button>
-    )}
-  </>
-)}
+        <Router>
+          {/* Bottone fisso in alto a sinistra SOLO su mobile */}
+          {isMobile && (
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={{
+                position: "fixed",
+                top: "1rem",
+                left: "1rem",
+                padding: "0.6rem 1.2rem",
+                backgroundColor: menuOpen ? "#ff4444" : "#0ff",
+                border: "none",
+                borderRadius: "6px",
+                color: "#000",
+                fontWeight: "bold",
+                fontSize: "0.95rem",
+                cursor: "pointer",
+                zIndex: 999,
+                transition: "background 0.2s ease",
+              }}
+            >
+              {menuOpen ? "✖ Close" : "☰ Menu"}
+            </button>
+          )}
 
+          <nav
+            style={{
+              width: isMobile ? (menuOpen ? "75%" : "0") : "260px",
+              backgroundColor: "#111",
+              padding: isMobile ? (menuOpen ? "2rem" : "0") : "2rem",
+              paddingTop: isMobile
+                ? menuOpen
+                  ? "6rem"   // 👈 Aumentato da 4rem a 6rem
+                  : "0"
+                : "2rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.5rem",
+              position: isMobile ? "fixed" : "sticky",
+              top: 0,
+              height: "100vh",
+              boxSizing: "border-box",
+              overflow: "hidden",
+              opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
+              pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
+              transition: "all 0.3s ease, padding-top 0.3s ease",
+              zIndex: 50,
+            }}
+          >
+            <Link
+              to="/about"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              About Us
+            </Link>
 
+            <Link
+              to="/mint"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              David's Mint
+            </Link>
 
+            <Link
+              to="/ethereal"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              Ethereal Renaissance’s Mint
+            </Link>
 
+            <Link
+              to="/collections"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              Our Collections
+            </Link>
 
+            <Link
+              to="/roadmap"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              Roadmap
+            </Link>
 
-<Router>
-  {/* Bottone fisso in alto a sinistra SOLO su mobile */}
-  {isMobile && (
-    <button
-      onClick={() => setMenuOpen(!menuOpen)}
-      style={{
-        position: "fixed",
-        top: "1rem",
-        left: "1rem",
-        padding: "0.6rem 1.2rem",
-        backgroundColor: menuOpen ? "#ff4444" : "#0ff",
-        border: "none",
-        borderRadius: "6px",
-        color: "#000",
-        fontWeight: "bold",
-        fontSize: "0.95rem",
-        cursor: "pointer",
-        zIndex: 999,
-        transition: "background 0.2s ease",
-      }}
-    >
-      {menuOpen ? "✖ Close" : "☰ Menu"}
-    </button>
-  )}
+            <Link
+              to="/howtobuy"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              How to Buy
+            </Link>
 
- <nav
-  style={{
-    width: isMobile ? (menuOpen ? "75%" : "0") : "260px",
-    backgroundColor: "#111",
-    padding: isMobile ? (menuOpen ? "2rem" : "0") : "2rem",
-    paddingTop: isMobile
-      ? menuOpen
-        ? "6rem"   // 👈 Aumentato da 4rem a 6rem
-        : "0"
-      : "2rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "1.5rem",
-    position: isMobile ? "fixed" : "sticky",
-    top: 0,
-    height: "100vh",
-    boxSizing: "border-box",
-    overflow: "hidden",
-    opacity: isMobile ? (menuOpen ? 1 : 0) : 1,
-    pointerEvents: isMobile ? (menuOpen ? "auto" : "none") : "auto",
-    transition: "all 0.3s ease, padding-top 0.3s ease",
-    zIndex: 50,
-  }}
->
+            <Link
+              to="/redeem"
+              style={{
+                color: "#fff",
+                fontSize: "1.1rem",
+                padding: "0.75rem 1rem",
+                textDecoration: "none",
+                borderRadius: "6px",
+                transition: "all 0.3s ease",
+              }}
+              onClick={() => isMobile && setMenuOpen(false)}
+            >
+              Redeem free Canvas 🎁
+            </Link>
+          </nav>
 
-    
+          <main
+            style={{
+              flexGrow: 1,
+              overflowY: "auto",
+              animation: "fadeIn 0.8s ease-in-out",
+              paddingBottom: isMobile ? "6rem" : "2rem", // 🔹 SOLO su mobile aggiunge spazio
+            }}
+          >
 
-    <Link
-      to="/about"
-      style={{
-        color: "#fff",
-        fontSize: "1.1rem",
-        padding: "0.75rem 1rem",
-        textDecoration: "none",
-        borderRadius: "6px",
-        transition: "all 0.3s ease",
-      }}
-      onClick={() => isMobile && setMenuOpen(false)}
-    >
-      About Us
-    </Link>
-    <Link
-      to="/mint"
-      style={{
-        color: "#fff",
-        fontSize: "1.1rem",
-        padding: "0.75rem 1rem",
-        textDecoration: "none",
-        borderRadius: "6px",
-        transition: "all 0.3s ease",
-      }}
-      onClick={() => isMobile && setMenuOpen(false)}
-    >
-      Mint
-    </Link>
-    <Link
-      to="/collections"
-      style={{
-        color: "#fff",
-        fontSize: "1.1rem",
-        padding: "0.75rem 1rem",
-        textDecoration: "none",
-        borderRadius: "6px",
-        transition: "all 0.3s ease",
-      }}
-      onClick={() => isMobile && setMenuOpen(false)}
-    >
-      Our Collections
-    </Link>
-    <Link
-      to="/roadmap"
-      style={{
-        color: "#fff",
-        fontSize: "1.1rem",
-        padding: "0.75rem 1rem",
-        textDecoration: "none",
-        borderRadius: "6px",
-        transition: "all 0.3s ease",
-      }}
-      onClick={() => isMobile && setMenuOpen(false)}
-    >
-      Roadmap
-    </Link>
-    <Link
-      to="/howtobuy"
-      style={{
-        color: "#fff",
-        fontSize: "1.1rem",
-        padding: "0.75rem 1rem",
-        textDecoration: "none",
-        borderRadius: "6px",
-        transition: "all 0.3s ease",
-      }}
-      onClick={() => isMobile && setMenuOpen(false)}
-    >
-      How to Buy
-    </Link>
-    <Link
-      to="/redeem"
-      style={{
-        color: "#fff",
-        fontSize: "1.1rem",
-        padding: "0.75rem 1rem",
-        textDecoration: "none",
-        borderRadius: "6px",
-        transition: "all 0.3s ease",
-      }}
-      onClick={() => isMobile && setMenuOpen(false)}
-    >
-      Redeem free Canvas 🎁
-    </Link>
-  </nav>
+            <Routes>
+              <Route
+                path="/"
+                element={<MintPage
+                  onMint={mint}
+                  minting={minting}
+                  error={error}
+                  success={success}
+                  walletConnected={walletConnected}
+                  connectWallet={connectWallet}
+                />
+                }
+              />
 
- <main
-  style={{
-    flexGrow: 1,
-    overflowY: "auto",
-    animation: "fadeIn 0.8s ease-in-out",
-    paddingBottom: isMobile ? "6rem" : "2rem", // 🔹 SOLO su mobile aggiunge spazio
-  }}
->
+              <Route
+                path="/ethereal"
+                element={
+                  <EtherealMint
+                    walletConnected={walletConnected}
+                    connectWallet={connectWallet}
+                  />
+                }
+              />
 
-    <Routes>
-      <Route  
-        path="/"
-        element={<MintPage
-            onMint={mint}
-            minting={minting}
-            error={error}
-            success={success}
-            walletConnected={walletConnected}
-            connectWallet={connectWallet}
-          />
-        }
-      />
-      <Route path="/about" element={<AboutUs />} />
-      <Route
-        path="/mint"
-        element={
-          <MintPage
-            onMint={mint}
-            minting={minting}
-            error={error}
-            success={success}
-            walletConnected={walletConnected}
-            connectWallet={connectWallet}
-          />
-        }
-      />
-      <Route path="/collections" element={<OurCollections />} />
-      <Route path="/roadmap" element={<Roadmap />} />
-      <Route path="/howtobuy" element={<HowToBuy />} />
-      <Route path="/products" element={<Products />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route
+                path="/mint"
+                element={
+                  <MintPage
+                    onMint={mint}
+                    minting={minting}
+                    error={error}
+                    success={success}
+                    walletConnected={walletConnected}
+                    connectWallet={connectWallet}
+                  />
+                }
+              />
+              <Route path="/collections" element={<OurCollections />} />
+              <Route path="/roadmap" element={<Roadmap />} />
+              <Route path="/howtobuy" element={<HowToBuy />} />
+              <Route path="/products" element={<Products />} />
 
-      <Route
-  path="/redeem"
-  element={
-    <RedeemCanvas
-      burnVoucher={burnVoucher}
-      burning={burning}
-      burnError={burnError}
-      burnSuccess={burnSuccess}
-      walletConnected={walletConnected}
-      burnTxHash={burnTxHash}
-      purchaseTxHash={purchaseTxHash}
-      walletAddress={walletAddress}
-      buyCanvas={buyCanvas}
-      connectWallet={connectWallet}   // 👈 aggiungi questo!
-    />
-  }
-/>
+              <Route
+                path="/redeem"
+                element={
+                  <RedeemCanvas
+                    burnVoucher={burnVoucher}
+                    burning={burning}
+                    burnError={burnError}
+                    burnSuccess={burnSuccess}
+                    walletConnected={walletConnected}
+                    burnTxHash={burnTxHash}
+                    purchaseTxHash={purchaseTxHash}
+                    walletAddress={walletAddress}
+                    buyCanvas={buyCanvas}
+                    connectWallet={connectWallet}   // 👈 aggiungi questo!
+                  />
+                }
+              />
 
-    </Routes>
-  </main>
-</Router>
+            </Routes>
+          </main>
+        </Router>
 
- 
-<footer
-  style={{
-    width: "100%",
-    padding: "0.6rem 1rem 1rem",
-    backgroundColor: "#111",
-    textAlign: "center",
-    color: "#ccc",
-    fontSize: "0.95rem",
-    boxShadow: "0 -2px 8px rgba(0,0,0,0.4)",
-    marginTop: "3rem"
-  }}
->
-  <p style={{ marginBottom: "0.4rem", fontWeight: "bold" }}>Follow us:</p>
-  <div style={{ display: "flex", justifyContent: "center", gap: "1.2rem", flexWrap: "wrap" }}>
-    <a
-      href="https://www.instagram.com/tuscanium/?hl=am-et"
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        color: "#0ff",
-        textDecoration: "none",
-        display: "flex",
-        alignItems: "center",
-         gap: "0.6rem",
-  fontSize: "1.05rem",
-      }}
-    >
-      <img src="/images/instagram.png" alt="Instagram" style={{ width: "22px", height: "22px" }} />
-      Instagram
-    </a>
-    <a
-      href="https://x.com/tuscanium"
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        color: "#0ff",
-        textDecoration: "none",
-        display: "flex",
-        alignItems: "center",
-         gap: "0.6rem",
-  fontSize: "1.05rem",
-      }}
-    >
-      <img src="/images/x.png" alt="X" style={{ width: "22px", height: "22px" }} />
-      X
-    </a>
-    <a
-      href="https://discord.gg/8MZatdFz3X"
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        color: "#0ff",
-        textDecoration: "none",
-        display: "flex",
-        alignItems: "center",
-         gap: "0.6rem",
-  fontSize: "1.05rem",
-      }}
-    >
-      <img src="/images/discord.png" alt="Discord" style={{ width: "22px", height: "22px" }} />
-      Discord
-    </a>
-  </div>
-</footer>
+        <footer
+          style={{
+            width: "100%",
+            padding: "0.6rem 1rem 1rem",
+            backgroundColor: "#111",
+            textAlign: "center",
+            color: "#ccc",
+            fontSize: "0.95rem",
+            boxShadow: "0 -2px 8px rgba(0,0,0,0.4)",
+            marginTop: "3rem"
+          }}
+        >
+          <p style={{ marginBottom: "0.4rem", fontWeight: "bold" }}>Follow us:</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1.2rem", flexWrap: "wrap" }}>
+            <a
+              href="https://www.instagram.com/tuscanium/?hl=am-et"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: "#0ff",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                fontSize: "1.05rem",
+              }}
+            >
+              <img src="/images/instagram.png" alt="Instagram" style={{ width: "22px", height: "22px" }} />
+              Instagram
+            </a>
+            <a
+              href="https://x.com/tuscanium"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: "#0ff",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                fontSize: "1.05rem",
+              }}
+            >
+              <img src="/images/x.png" alt="X" style={{ width: "22px", height: "22px" }} />
+              X
+            </a>
+            <a
+              href="https://discord.gg/8MZatdFz3X"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: "#0ff",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                fontSize: "1.05rem",
+              }}
+            >
+              <img src="/images/discord.png" alt="Discord" style={{ width: "22px", height: "22px" }} />
+              Discord
+            </a>
+          </div>
+        </footer>
 
-<Analytics />
+        <Analytics />
 
-</div>
-</>
-);
+      </div>
+    </>
+  );
 }
